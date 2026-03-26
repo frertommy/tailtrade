@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0c0e12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0e12;--border:#242629;--hover:#181b20;--lime:#b2ed68;--lime-bg:rgba(178,237,104,.06);--w:#eef1f6;--t1:#b0b5be;--t2:#8a8f98;--t3:#606267;--blue:#5b8def;--purple:#a78bfa;--amber:#f5c542;--red:#ef6b6b}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--t1);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.mono{font-family:'Space Mono',monospace}.upper{text-transform:uppercase}a{color:var(--lime);text-decoration:none}a:hover{text-decoration:underline}
+#grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.25}
+.content{position:relative;z-index:1}
+.sec{border-bottom:1px solid var(--border)}.sec-inner{max-width:1200px;margin:0 auto;padding:5rem 1.5rem}
+@media(min-width:768px){.sec-inner{padding:7rem 3rem}}@media(min-width:1280px){.sec-inner{padding:8rem 4rem}}
+.lbl{font-family:'Space Mono',monospace;font-size:12px;line-height:16px;text-transform:uppercase;letter-spacing:.08em}
+.h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(32px,6vw,56px);line-height:1.1;color:var(--w)}
+.h2{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(24px,4vw,38px);line-height:1.15;color:var(--w)}
+.body{font-size:15px;line-height:24px;color:var(--t1)}
+.g2{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border)}.g3{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border)}.g4{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+@media(min-width:768px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}}
+.g2>*,.g3>*,.g4>*{background:var(--bg)}
+.card{background:var(--bg);padding:28px;transition:background .2s}.card:hover{background:var(--hover)}
+.card-title{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;line-height:22px;text-transform:uppercase;color:var(--w);margin-bottom:10px}
+.card-body{font-size:13px;line-height:20px;color:var(--t1)}
+.stat-val{font-family:'Space Mono',monospace;font-weight:700;font-size:24px;line-height:32px;color:var(--w)}
+.stat-lbl{font-family:'Space Mono',monospace;font-size:12px;line-height:16px;color:var(--t2);text-transform:uppercase;margin-top:6px}
+.badge{display:inline-block;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;padding:4px 10px;border-radius:2px}
+.bar-t{height:2px;margin-bottom:16px}
+.vbar{height:4px;background:var(--border);margin-top:12px}.vbar-fill{height:100%;width:0;transition:width 1.5s cubic-bezier(.16,1,.3,1)}.vbar-fill.active{width:var(--w)}
+.callout{margin-top:24px;padding:20px 24px;border:1px solid var(--border);border-left:2px solid var(--lime)}
+.why-grid{display:grid;grid-template-columns:1fr;gap:32px;margin-top:40px;align-items:start}
+@media(min-width:1100px){.why-grid{grid-template-columns:1fr 1fr}}
+.callout span{font-size:15px;color:var(--w)}
+.ticker-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.ticker{display:flex;animation:tickScroll 40s linear infinite;width:max-content}@keyframes tickScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{display:flex;align-items:center;gap:12px;padding:12px 24px;border-right:1px solid var(--border);white-space:nowrap}
+.tick-name{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--w);text-transform:uppercase}.tick-price{font-family:'Space Mono',monospace;font-size:12px;color:var(--t1)}
+.reveal{opacity:0;transform:translateY(20px);transition:all .6s cubic-bezier(.16,1,.3,1)}.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+.pulse{width:6px;height:6px;background:var(--lime);animation:pul 2s ease-in-out infinite}@keyframes pul{0%,100%{box-shadow:0 0 0 0 rgba(178,237,104,.4)}50%{box-shadow:0 0 0 8px rgba(178,237,104,0)}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border)}
+
+
+/* === MOBILE RESPONSIVE === */
+@media(max-width:767px){
+  /* Font loading optimization */
+  .mono{font-size:inherit}
+  
+  /* Feature strip below chart */
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns:repeat(5,1fr)"]{
+    grid-template-columns:1fr 1fr !important;
+  }
+  
+  /* Oracle calendar grid - stack on mobile */
+  [style*="grid-template-columns:180px repeat(12"]{
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+  }
+  [style*="grid-template-columns:180px repeat(12"] > div{
+    display:none;
+  }
+  [style*="grid-template-columns:180px repeat(12"] > div:first-child{
+    display:block;
+  }
+  
+  /* Two-column layouts go single */
+  [style*="grid-template-columns:3fr 5fr"],
+  [style*="grid-template-columns:1fr 1fr;gap:1px"]{
+    grid-template-columns:1fr !important;
+  }
+  
+  /* Fee comparison table - horizontal scroll */
+  [style*="grid-template-columns:2fr 1fr 1fr 1fr 1fr"],
+  [style*="grid-template-columns:2.5fr 0.8fr 1.2fr 2fr"]{
+    grid-template-columns:1.5fr 1fr 1fr 1fr 1fr !important;
+    font-size:10px !important;
+  }
+  
+  /* Trade scenario cards - stack */
+  [style*="grid-template-columns:1fr 140px"]{
+    grid-template-columns:1fr !important;
+  }
+  [style*="grid-template-columns:1fr 140px"] > div:last-child{
+    border-left:none !important;
+    border-top:1px solid var(--border);
+    padding:16px !important;
+    height:80px;
+  }
+  
+  /* Match card two-col */
+  [style*="grid-template-columns:1fr 40px 1fr"]{
+    grid-template-columns:1fr 30px 1fr !important;
+  }
+  
+  /* Odds grid */
+  [style*="grid-template-columns:50px 1fr 1fr 1fr"]{
+    grid-template-columns:40px 1fr 1fr 1fr !important;
+  }
+  
+  /* Stat values smaller on mobile */
+  .mono[style*="font-size:36px"]{font-size:24px !important}
+  .mono[style*="font-size:32px"]{font-size:22px !important}
+  .mono[style*="font-size:28px"]{font-size:20px !important}
+  
+  /* Chart header wrap */
+  [style*="display:flex;gap:16px;margin-left:auto"]{
+    display:none !important;
+  }
+  
+  /* Inline flex wrapping */
+  [style*="display:flex;align-items:center;gap:0;overflow-x:hidden"]{
+    flex-wrap:wrap !important;
+    gap:8px !important;
+  }
+  
+  /* Section padding tighter */
+  .sec-inner{padding:3rem 1.25rem !important}
+  
+  /* Body text */
+  .body{font-size:14px;line-height:22px}
+  
+  /* Cards */
+  .card{padding:20px}
+  
+  /* Buttons */
+  button.mono{font-size:12px !important;padding:8px 14px !important}
+  
+  /* Flywheel / funnel canvases */
+  canvas[id="fw-canvas"],canvas[id="funnel-canvas"]{
+    min-height:300px;
+  }
+  
+  /* Nav */
+  [style*="position:sticky"] [style*="font-size:18px"]{
+    font-size:15px !important;
+  }
+  
+  /* Appendix header */
+  [style*="font-size:clamp(48px,8vw,80px)"]{
+    font-size:clamp(32px,10vw,60px) !important;
+  }
+  
+  /* Callout */
+  .callout{padding:16px}
+  
+  /* Logo boxes consistent */
+  [style*="height:56px"][style*="background:#000"]{
+    height:48px !important;
+  }
+}
+
+/* Small phone */
+@media(max-width:400px){
+  .h1{font-size:clamp(26px,7vw,40px) !important}
+  .h2{font-size:clamp(20px,5vw,30px) !important}
+  .g4{grid-template-columns:1fr !important}
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns:repeat(5,1fr)"]{
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* Tablet tweaks */
+@media(min-width:768px) and (max-width:1024px){
+  [style*="grid-template-columns:3fr 5fr"]{
+    grid-template-columns:1fr 1fr !important;
+  }
+  [style*="grid-template-columns:repeat(5,1fr)"]{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media(hover:none){
+  button.mono{min-height:44px;min-width:44px}
+  a{min-height:44px;display:inline-flex;align-items:center}
+}
+</style>
+<canvas id="grid-bg"></canvas>
+<div class="content">
+
+<!-- NAV -->
+<div class="sec" style="position:sticky;top:0;z-index:100;background:rgba(12,14,18,.85);backdrop-filter:blur(12px)"><div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center"><svg width="120" height="25" viewBox="0 0 500 103" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M76.8666 55.7917C76.8666 65.2726 84.5143 72.9583 93.9481 72.9583H102.489V77.25H93.9481C84.5143 77.25 76.8666 84.9358 76.8666 94.4167V103H72.5962V94.4167C72.5962 84.9358 64.9486 77.25 55.5148 77.25H46.974V72.9583H55.5148C64.9486 72.9583 72.5962 65.2726 72.5962 55.7917V12.875H76.8666V55.7917Z" fill="white"/><path d="M29.8926 8.58333C29.8926 18.0642 37.5402 25.75 46.974 25.75H55.5148V30.0417H46.974C37.5402 30.0417 29.8926 37.7274 29.8926 47.2083V90.125H25.6222V47.2083C25.6222 37.7274 17.9746 30.0417 8.54074 30.0417H0V25.75H8.54074C17.9746 25.75 25.6222 18.0642 25.6222 8.58333V0H29.8926V8.58333Z" fill="white"/><path d="M303.509 64.9576C304.775 64.9577 305.857 65.4238 306.732 66.3406L307.058 66.6801C307.764 67.4975 308.121 68.4745 308.121 69.5929C308.121 70.8707 307.655 71.9805 306.741 72.8997C305.862 73.7833 304.774 74.228 303.509 74.2282C302.243 74.2282 301.139 73.7851 300.223 72.908L300.21 72.8955C299.337 71.9745 298.897 70.8647 298.897 69.5929C298.897 68.321 299.339 67.2285 300.219 66.3448C301.133 65.4263 302.237 64.9576 303.509 64.9576Z" fill="white"/><path d="M172.216 36.014H160.018V73.3858H154.142V36.014H141.948V30.4692H172.216V36.014Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M198.818 30.7751L211.663 73.3858H205.386L205.295 73.0799L202.338 62.9333H185.04L182.083 73.0799L181.991 73.3858H175.715L188.555 30.7751L188.647 30.4692H198.726L198.818 30.7751ZM186.662 57.3885H200.711L193.726 33.4909H193.651L186.662 57.3885Z" fill="white"/><path d="M243.995 36.014H233.231V67.841H243.995V73.3858H216.596V67.841H227.355V36.014H216.596V30.4692H243.995V36.014Z" fill="white"/><path d="M259.258 67.841H281.139V73.3858H253.382V30.4692H259.258V67.841Z" fill="white"/><path d="M355.25 36.014H343.051V73.3858H337.176V36.014H324.982V30.4692H355.25V36.014Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M378.457 30.4692C380.644 30.4693 382.568 30.7964 384.22 31.4583C385.859 32.0758 387.231 32.9269 388.316 34.0148C389.438 35.1008 390.273 36.3787 390.814 37.8413C391.39 39.2527 391.677 40.7461 391.677 42.3173V44.1195C391.677 45.7654 391.212 47.3983 390.305 49.0147C389.459 50.59 388.152 51.8015 386.414 52.6693V52.7783C387.524 53.0239 388.434 53.5204 389.116 54.2871C389.886 55.1517 390.242 56.3488 390.242 57.816V73.3858H384.366V58.8973C384.366 57.9177 384.138 57.2327 383.749 56.7766C383.391 56.3569 382.712 56.085 381.564 56.085H368.957V73.3858H363.081V30.4692H378.457ZM368.957 50.5402H377.857C380.639 50.5402 382.61 49.9454 383.854 48.8429C385.133 47.7032 385.801 46.0325 385.801 43.7591V42.6778C385.801 40.6596 385.141 39.0778 383.845 37.8874L383.837 37.879C382.593 36.6661 380.63 36.014 377.857 36.014H368.957V50.5402ZM386.03 45.7289C386.051 45.629 386.08 45.5298 386.097 45.4271L386.11 45.3265C386.088 45.4635 386.058 45.5967 386.03 45.7289ZM385.409 39.1908C385.517 39.3895 385.614 39.5951 385.701 39.8069C385.527 39.3816 385.312 38.981 385.05 38.6082L385.409 39.1908Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M418.458 30.7751L431.303 73.3858H425.027L424.935 73.0799L421.978 62.9333H404.68L401.723 73.0799L401.631 73.3858H395.355L408.195 30.7751L408.287 30.4692H418.367L418.458 30.7751ZM406.302 57.3885H420.352L413.367 33.4909H413.292L406.302 57.3885Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M449.756 30.4692C454.994 30.4693 458.916 31.7248 461.421 34.3249C463.923 36.9239 465.128 41.0242 465.128 46.521V57.3382C465.128 62.8343 463.923 66.9312 461.421 69.53C458.916 72.1312 454.995 73.3857 449.756 73.3858H435.577V67.7823H439.164V36.014H435.577V30.4692H449.756ZM445.04 67.841H449.039C450.846 67.841 452.379 67.6645 453.647 67.3171C454.943 66.9725 455.996 66.4027 456.813 65.6197C457.625 64.8012 458.228 63.7112 458.61 62.3298L458.614 62.3172C459.036 60.9303 459.252 59.1547 459.252 56.9777V46.8814C459.252 44.7045 459.035 42.9289 458.614 41.542L458.285 40.5487C457.915 39.6281 457.42 38.8847 456.813 38.3023L456.808 38.2939C455.992 37.473 454.943 36.8857 453.651 36.542C452.383 36.1946 450.846 36.014 449.039 36.014H445.04V67.841ZM460.649 34.1741L460.282 33.8555C460.259 33.8367 460.235 33.8198 460.211 33.8011C460.361 33.9219 460.508 34.0457 460.649 34.1741Z" fill="white"/><path d="M499.641 36.014H479.315V49.0985H499.283V54.6433H479.315V67.841H500V73.3858H473.439V30.4692H499.641V36.014Z" fill="white"/></svg></div></div></div>
+
+<!-- 01 HERO -->
+<div class="sec"><div class="sec-inner" style="min-height:calc(100vh - 57px);display:flex;flex-direction:column;justify-content:flex-end;gap:16px">
+  <div class="lbl reveal" style="color:var(--t2)">01 · Persistent Sports Positions</div>
+  <div class="reveal d1"><span class="h1" style="display:block"><svg style="height:0.85em;width:auto;vertical-align:baseline;position:relative;top:0.02em;margin-right:0.15em" viewBox="0 0 500 103" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M76.8666 55.7917C76.8666 65.2726 84.5143 72.9583 93.9481 72.9583H102.489V77.25H93.9481C84.5143 77.25 76.8666 84.9358 76.8666 94.4167V103H72.5962V94.4167C72.5962 84.9358 64.9486 77.25 55.5148 77.25H46.974V72.9583H55.5148C64.9486 72.9583 72.5962 65.2726 72.5962 55.7917V12.875H76.8666V55.7917Z" fill="white"/><path d="M29.8926 8.58333C29.8926 18.0642 37.5402 25.75 46.974 25.75H55.5148V30.0417H46.974C37.5402 30.0417 29.8926 37.7274 29.8926 47.2083V90.125H25.6222V47.2083C25.6222 37.7274 17.9746 30.0417 8.54074 30.0417H0V25.75H8.54074C17.9746 25.75 25.6222 18.0642 25.6222 8.58333V0H29.8926V8.58333Z" fill="white"/><path d="M303.509 64.9576C304.775 64.9577 305.857 65.4238 306.732 66.3406L307.058 66.6801C307.764 67.4975 308.121 68.4745 308.121 69.5929C308.121 70.8707 307.655 71.9805 306.741 72.8997C305.862 73.7833 304.774 74.228 303.509 74.2282C302.243 74.2282 301.139 73.7851 300.223 72.908L300.21 72.8955C299.337 71.9745 298.897 70.8647 298.897 69.5929C298.897 68.321 299.339 67.2285 300.219 66.3448C301.133 65.4263 302.237 64.9576 303.509 64.9576Z" fill="white"/><path d="M172.216 36.014H160.018V73.3858H154.142V36.014H141.948V30.4692H172.216V36.014Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M198.818 30.7751L211.663 73.3858H205.386L205.295 73.0799L202.338 62.9333H185.04L182.083 73.0799L181.991 73.3858H175.715L188.555 30.7751L188.647 30.4692H198.726L198.818 30.7751ZM186.662 57.3885H200.711L193.726 33.4909H193.651L186.662 57.3885Z" fill="white"/><path d="M243.995 36.014H233.231V67.841H243.995V73.3858H216.596V67.841H227.355V36.014H216.596V30.4692H243.995V36.014Z" fill="white"/><path d="M259.258 67.841H281.139V73.3858H253.382V30.4692H259.258V67.841Z" fill="white"/><path d="M355.25 36.014H343.051V73.3858H337.176V36.014H324.982V30.4692H355.25V36.014Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M378.457 30.4692C380.644 30.4693 382.568 30.7964 384.22 31.4583C385.859 32.0758 387.231 32.9269 388.316 34.0148C389.438 35.1008 390.273 36.3787 390.814 37.8413C391.39 39.2527 391.677 40.7461 391.677 42.3173V44.1195C391.677 45.7654 391.212 47.3983 390.305 49.0147C389.459 50.59 388.152 51.8015 386.414 52.6693V52.7783C387.524 53.0239 388.434 53.5204 389.116 54.2871C389.886 55.1517 390.242 56.3488 390.242 57.816V73.3858H384.366V58.8973C384.366 57.9177 384.138 57.2327 383.749 56.7766C383.391 56.3569 382.712 56.085 381.564 56.085H368.957V73.3858H363.081V30.4692H378.457ZM368.957 50.5402H377.857C380.639 50.5402 382.61 49.9454 383.854 48.8429C385.133 47.7032 385.801 46.0325 385.801 43.7591V42.6778C385.801 40.6596 385.141 39.0778 383.845 37.8874L383.837 37.879C382.593 36.6661 380.63 36.014 377.857 36.014H368.957V50.5402ZM386.03 45.7289C386.051 45.629 386.08 45.5298 386.097 45.4271L386.11 45.3265C386.088 45.4635 386.058 45.5967 386.03 45.7289ZM385.409 39.1908C385.517 39.3895 385.614 39.5951 385.701 39.8069C385.527 39.3816 385.312 38.981 385.05 38.6082L385.409 39.1908Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M418.458 30.7751L431.303 73.3858H425.027L424.935 73.0799L421.978 62.9333H404.68L401.723 73.0799L401.631 73.3858H395.355L408.195 30.7751L408.287 30.4692H418.367L418.458 30.7751ZM406.302 57.3885H420.352L413.367 33.4909H413.292L406.302 57.3885Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M449.756 30.4692C454.994 30.4693 458.916 31.7248 461.421 34.3249C463.923 36.9239 465.128 41.0242 465.128 46.521V57.3382C465.128 62.8343 463.923 66.9312 461.421 69.53C458.916 72.1312 454.995 73.3857 449.756 73.3858H435.577V67.7823H439.164V36.014H435.577V30.4692H449.756ZM445.04 67.841H449.039C450.846 67.841 452.379 67.6645 453.647 67.3171C454.943 66.9725 455.996 66.4027 456.813 65.6197C457.625 64.8012 458.228 63.7112 458.61 62.3298L458.614 62.3172C459.036 60.9303 459.252 59.1547 459.252 56.9777V46.8814C459.252 44.7045 459.035 42.9289 458.614 41.542L458.285 40.5487C457.915 39.6281 457.42 38.8847 456.813 38.3023L456.808 38.2939C455.992 37.473 454.943 36.8857 453.651 36.542C452.383 36.1946 450.846 36.014 449.039 36.014H445.04V67.841ZM460.649 34.1741L460.282 33.8555C460.259 33.8367 460.235 33.8198 460.211 33.8011C460.361 33.9219 460.508 34.0457 460.649 34.1741Z" fill="white"/><path d="M499.641 36.014H479.315V49.0985H499.283V54.6433H479.315V67.841H500V73.3858H473.439V30.4692H499.641V36.014Z" fill="white"/></svg> is the first</span><span class="h1" style="display:block">perpetual market</span><span class="h1" style="display:block">for <span style="color:var(--lime)">sports.</span></span></div>
+  <p class="body reveal d2" style="max-width:460px;margin-top:12px;font-size:16px;line-height:26px">Match bets expire. Team positions shouldn't.</p>
+</div></div>
+
+<!-- TICKER -->
+
+
+<!-- 02 PROBLEM -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">02 · Problem</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">A trillion-dollar category still runs on <span style="color:var(--t2)">bets with an expiration date.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Today's sports products monetize opinions, but they never let those opinions compound. Every existing sports position has a death sentence.</p>
+  <div class="reveal d2" style="margin-top:32px;border:1px solid var(--border);padding:24px;display:flex;align-items:center;gap:0;overflow-x:hidden;flex-wrap:wrap;justify-content:center">
+    <div style="text-align:center;padding:0 20px"><div class="lbl" style="color:var(--lime)">Pre-match</div><div style="width:40px;height:2px;background:var(--lime);margin:8px auto"></div></div><div class="mono" style="color:var(--t3)">→</div>
+    <div style="text-align:center;padding:0 20px"><div class="lbl" style="color:var(--amber)">In play</div><div style="width:40px;height:2px;background:var(--amber);margin:8px auto"></div></div><div class="mono" style="color:var(--t3)">→</div>
+    <div style="text-align:center;padding:0 20px"><div class="lbl" style="color:var(--red)">Final whistle</div><div style="width:40px;height:2px;background:var(--red);margin:8px auto"></div></div><div class="mono" style="color:var(--t3)">→</div>
+    <div style="text-align:center;padding:0 20px"><div class="mono upper" style="font-weight:700;font-size:18px;color:var(--red)">SETTLED</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Zero. Gone.</div></div>
+  </div>
+  <div class="g2" style="margin-top:32px">
+    <div class="card reveal d3" style="text-align:center;padding:32px"><div class="mono" style="font-weight:700;font-size:36px;color:var(--w)">$166.9B</div><div class="stat-lbl">U.S. legal sports handle 2025</div></div>
+    <div class="card reveal d4" style="text-align:center;padding:32px"><div class="mono" style="font-weight:700;font-size:36px;color:var(--w)">$64B</div><div class="stat-lbl">Prediction market volume 2025</div></div>
+  </div>
+
+</div></div>
+
+<!-- BRIDGE: THE IDEA -->
+<style>
+.badge-expired{margin-top:auto;padding-top:16px;display:flex;align-items:center;gap:10px}
+.badge-expired .box{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--red);border:1.5px solid var(--red);padding:10px 20px;text-transform:uppercase;position:relative;overflow:hidden}
+.badge-expired .box::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(239,107,107,.06)}
+.badge-expired .line{flex:1;height:1.5px;background:var(--red);opacity:.25}
+.badge-perp{margin-top:auto;padding-top:16px;display:flex;align-items:center;gap:10px}
+.badge-perp .box{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--bg);background:var(--lime);padding:10px 20px;text-transform:uppercase}
+.badge-perp .line{flex:1;height:1.5px;background:var(--lime);opacity:.3}
+.badge-perp .pulse{width:8px;height:8px;background:var(--lime);border-radius:50%;flex-shrink:0;animation:pul 2s ease-in-out infinite}
+@keyframes pul{0%,100%{box-shadow:0 0 0 0 rgba(178,237,104,.5)}50%{box-shadow:0 0 0 8px rgba(178,237,104,0)}}
+</style>
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">03 · The Idea</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">What if you could trade a <span style="color:var(--lime)">team</span> — not just a match?</div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Every sports fan already holds a view on their team. But today, the only way to express it is a bet that dies at the final whistle. There's no instrument that lets you hold a position on team strength over time.</p>
+
+  <div class="reveal d3" style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
+    <div style="background:var(--bg);padding:28px;display:flex;flex-direction:column;gap:12px">
+      <div class="lbl" style="color:var(--red);margin-bottom:0">Today</div>
+      <div style="font-size:14px;color:var(--w);font-weight:600">"Arsenal will beat Chelsea on Saturday"</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.6">Binary outcome. One game. Position dies at 90 minutes.</div>
+      <div class="badge-expired" style="padding-right:35%">
+        <div class="line"></div>
+        <div class="box">Expired</div>
+      </div>
+    </div>
+    <div style="background:var(--bg);padding:28px;display:flex;flex-direction:column;gap:12px">
+      <div class="lbl" style="color:var(--lime);margin-bottom:0">Tail.trade</div>
+      <div style="font-size:14px;color:var(--w);font-weight:600">"Arsenal is undervalued. I'm going long."</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.6">Continuous position. Every match, transfer, and injury reprices it. Hold for a week, a month or even across seasons.</div>
+      <div class="badge-perp">
+        <div class="line"></div>
+        <div class="box">Perpetual</div>
+        <div class="line"></div>
+        <div class="pulse"></div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- 03 PRODUCT -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">04 · Product</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Go long Arsenal. <span style="color:var(--lime)">Hold it for six months.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Tail.trade turns sports teams into continuous, marginable instruments. Users don't buy a one-off match slip — they take a view on the team itself.</p>
+
+  <!-- Full-width chart with match events -->
+  <div class="reveal d3" style="margin-top:32px;border:1px solid var(--border);overflow:hidden">
+    <!-- Header -->
+    <div style="padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;align-items:baseline;gap:8px"><span class="mono" style="font-weight:700;font-size:18px;color:var(--w)">ARS</span><span class="mono" style="font-size:11px;color:var(--t3)">Perp</span></div>
+      <span class="mono" style="font-weight:700;font-size:18px;color:var(--lime)">223.42</span>
+      <span class="mono" style="font-size:12px;color:var(--lime)">+3.2%</span>
+      <div style="display:flex;gap:16px;margin-left:auto">
+        <div><span class="mono" style="font-size:10px;color:var(--t3)">24h High </span><span class="mono" style="font-size:11px;color:var(--t1)">228.10</span></div>
+        <div><span class="mono" style="font-size:10px;color:var(--t3)">24h Low </span><span class="mono" style="font-size:11px;color:var(--t1)">219.55</span></div>
+        <div><span class="mono" style="font-size:10px;color:var(--t3)">Funding </span><span class="mono" style="font-size:11px;color:var(--lime)">0.01%</span></div>
+      </div>
+    </div>
+    <!-- Static chart -->
+    <div style="height:280px;position:relative"><canvas id="chart-match" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block"></canvas></div>
+    <!-- Match labels -->
+    <div style="padding:8px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;text-align:center">
+      <div><span class="mono" style="font-size:10px;color:var(--red)">Loss 0–2 vs MCI</span><br><span class="mono" style="font-size:9px;color:var(--t3)">Mar 8</span></div>
+      <div><span class="mono" style="font-size:10px;color:var(--lime)">Win 3–1 vs CHE</span><br><span class="mono" style="font-size:9px;color:var(--t3)">Mar 15</span></div>
+      <div><span class="mono" style="font-size:10px;color:var(--red)">Loss 1–2 vs LIV</span><br><span class="mono" style="font-size:9px;color:var(--t3)">Mar 22</span></div>
+    </div>
+    <div style="padding:6px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span class="lbl" style="color:var(--t3)">Arsenal · Team Strength Index</span><span class="mono" style="font-size:11px;color:var(--t3)">Example · 30 days</span></div>
+  </div>
+
+  <!-- Feature strip below chart — heavy hitters -->
+  <div class="reveal d3" style="margin-top:0;border:1px solid var(--border);border-top:none;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)">
+    <div style="background:var(--bg);padding:20px"><div class="mono upper" style="font-weight:700;font-size:13px;color:var(--lime);margin-bottom:6px">Long / Short</div><div style="font-size:12px;color:var(--t1)">Take a view on the team, not just a game.</div></div>
+    <div style="background:var(--bg);padding:20px"><div class="mono upper" style="font-weight:700;font-size:13px;color:var(--lime);margin-bottom:6px">Persistent</div><div style="font-size:12px;color:var(--t1)">Hold through matches, injuries, transfers, seasons.</div></div>
+    <div style="background:var(--bg);padding:20px"><div class="mono upper" style="font-weight:700;font-size:13px;color:var(--lime);margin-bottom:6px">Leveraged</div><div style="font-size:12px;color:var(--t1)">$167B in sports handle offers zero margin. We do.</div></div>
+    <div style="background:var(--bg);padding:20px"><div class="mono upper" style="font-weight:700;font-size:13px;color:var(--amber);margin-bottom:6px">Arbitrageable</div><div style="font-size:12px;color:var(--t1)">Directly connected to bookmaker + prediction market pricing.</div></div>
+  </div>
+</div></div>
+
+
+<!-- 04 DATA FEED -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">05 · Data</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Proprietary pricing <span style="color:var(--lime)">as the Oracle.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Our algorithm synthesizes sports data into a tradeable Team Strength Price.</p>
+
+  <!-- Three inputs -->
+  <div class="g3" style="margin-top:40px">
+    <div class="card reveal d1" style="padding:28px;text-align:center">
+      <div class="mono" style="font-weight:700;font-size:24px;color:var(--w);margin-bottom:12px">Years</div>
+      <div class="bar-t" style="background:var(--amber)"></div>
+      <div class="mono" style="font-weight:700;font-size:15px;color:var(--amber)">HISTORIC PERFORMANCE</div>
+      <div style="font-size:13px;color:var(--t1);margin-top:12px">Results, xG, form tables, head-to-head records — the foundation of team strength.</div>
+    </div>
+    <div class="card reveal d2" style="padding:28px;text-align:center">
+      <div class="mono" style="font-weight:700;font-size:24px;color:var(--w);margin-bottom:12px">50–100+ /mo</div>
+      <div class="bar-t" style="background:var(--purple)"></div>
+      <div class="mono" style="font-weight:700;font-size:15px;color:var(--purple)">FINALITY</div>
+      <div style="font-size:13px;color:var(--t1);margin-top:12px">Match outcomes, league standings, cup eliminations — hard, indisputable checkpoints.</div>
+    </div>
+    <div class="card reveal d3" style="padding:28px;text-align:center">
+      <div class="mono" style="font-weight:700;font-size:24px;color:var(--w);margin-bottom:12px">24/7</div>
+      <div class="bar-t" style="background:var(--lime)"></div>
+      <div class="mono" style="font-weight:700;font-size:15px;color:var(--lime)">ODDS</div>
+      <div style="font-size:13px;color:var(--t1);margin-top:12px">20+ bookmaker and prediction market feeds reprice teams around the clock — a continuous data layer for the underlying asset.</div>
+    </div>
+  </div>
+
+  <!-- Arrow down into oracle -->
+  <div class="reveal d3" style="display:flex;justify-content:center;padding:16px 0">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:32px;height:1px;background:var(--amber)"></div>
+      <div style="width:32px;height:1px;background:var(--purple)"></div>
+      <div class="mono" style="font-size:18px;color:var(--t3)">↓</div>
+      <div style="width:32px;height:1px;background:var(--lime)"></div>
+      <div style="width:32px;height:1px;background:var(--amber)"></div>
+    </div>
+  </div>
+
+  <!-- Oracle output -->
+  <div class="reveal d4" style="text-align:center;padding:28px 32px;border:1px solid var(--lime)">
+    <div style="position:relative"><div style="position:absolute;top:-29px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),var(--purple),var(--lime))"></div></div>
+    <div class="lbl" style="color:var(--lime);margin-bottom:8px">Oracle Output</div>
+    <div class="mono" style="font-weight:700;font-size:28px;color:var(--w)">TEAM PRICE</div>
+    <div style="font-size:14px;color:var(--t1);margin-top:8px">Continuous, synthetic index per club — updated in real time</div>
+  </div>
+</div></div>
+
+<!-- 05 ORACLE IN ACTION -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">06 · Oracle in Action</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Every match <span style="color:var(--lime)">reprices the asset.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Bookmaker odds, prediction market prices, and match outcomes feed into team prices in real time. This makes the perp directly connected to event market pricing — giving bookmaker and prediction market traders a new venue to arb and hedge.</p>
+
+  <!-- Two-column: match card left, price factors right -->
+  <div class="reveal d2" style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
+
+    <!-- LEFT: Match card -->
+    <div style="background:var(--bg)">
+      <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="mono" style="font-weight:700;font-size:10px;color:var(--bg);background:var(--lime);padding:2px 6px;border-radius:2px">EPL</span>
+          <span class="mono" style="font-size:10px;color:var(--t3)">Friday, Mar 20</span>
+        </div>
+        <span class="lbl" style="color:var(--t3);font-size:10px">Example · Upcoming match</span>
+      </div>
+
+      <!-- Teams -->
+      <div style="padding:20px 20px 0;display:grid;grid-template-columns:1fr 40px 1fr;align-items:center">
+        <div>
+          <div style="font-weight:700;font-size:16px;color:var(--w)">Brighton</div>
+          <div class="mono" style="font-weight:700;font-size:22px;color:var(--lime);margin-top:2px">$181.92</div>
+        </div>
+        <div class="mono" style="font-size:12px;color:var(--t3);text-align:center;font-weight:700">vs</div>
+        <div style="text-align:right">
+          <div style="font-weight:700;font-size:16px;color:var(--w)">Man United</div>
+          <div class="mono" style="font-weight:700;font-size:22px;color:var(--lime);margin-top:2px">$201.62</div>
+        </div>
+      </div>
+
+      <!-- Impact rows -->
+      <div style="padding:16px 20px">
+        <div class="mono" style="font-size:9px;color:var(--t3);padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>BRIGHTON</span><span>UNITED</span></div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--lime)">+$3.47</span>
+          <span style="font-size:10px;color:var(--t2)"><span style="color:var(--lime)">BHA Win</span> · <span style="color:var(--red)">UTD Loss</span></span>
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--red)">-$3.47</span>
+        </div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--lime)">+$0.47</span>
+          <span style="font-size:10px;color:var(--amber)">Draw</span>
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--red)">-$0.47</span>
+        </div>
+        <div style="padding:8px 0;display:flex;justify-content:space-between;align-items:center">
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--red)">-$2.53</span>
+          <span style="font-size:10px;color:var(--t2)"><span style="color:var(--red)">BHA Loss</span> · <span style="color:var(--lime)">UTD Win</span></span>
+          <span class="mono" style="font-size:12px;font-weight:700;color:var(--lime)">+$2.53</span>
+        </div>
+      </div>
+
+      <!-- Odds + Poly -->
+      <div style="border-top:1px solid var(--border);padding:12px 20px">
+        <div style="display:grid;grid-template-columns:50px 1fr 1fr 1fr;gap:0;text-align:center">
+          <div></div>
+          <div class="mono" style="font-size:10px;font-weight:700;color:var(--lime);padding-bottom:6px">BHA</div>
+          <div class="mono" style="font-size:10px;font-weight:700;color:var(--amber);padding-bottom:6px">Draw</div>
+          <div class="mono" style="font-size:10px;font-weight:700;color:var(--red);padding-bottom:6px">UTD</div>
+        </div>
+        <div style="display:grid;grid-template-columns:50px 1fr 1fr 1fr;gap:0;text-align:center;padding:4px 0;border-top:1px solid var(--border)">
+          <div class="mono" style="font-size:10px;color:var(--t3);text-align:left">Odds</div>
+          <div class="mono" style="font-size:12px;color:var(--t1)">3.25</div>
+          <div class="mono" style="font-size:12px;color:var(--t1)">3.82</div>
+          <div class="mono" style="font-size:12px;color:var(--t1)">2.10</div>
+        </div>
+        <div style="display:grid;grid-template-columns:50px 1fr 1fr 1fr;gap:0;text-align:center;padding:4px 0;border-top:1px solid var(--border)">
+          <div class="mono" style="font-size:10px;color:var(--purple);text-align:left">Poly</div>
+          <div class="mono" style="font-size:12px;color:var(--t1)">28¢</div>
+          <div class="mono" style="font-size:12px;color:var(--t1)">26¢</div>
+          <div class="mono" style="font-size:12px;color:var(--t1)">46¢</div>
+        </div>
+        <div style="margin-top:10px;display:flex;height:5px;border-radius:3px;overflow:hidden">
+          <div style="width:29%;background:var(--lime)"></div>
+          <div style="width:25%;background:var(--amber)"></div>
+          <div style="width:46%;background:var(--red)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span class="mono" style="font-size:10px;color:var(--lime)">29%</span>
+          <span class="mono" style="font-size:10px;color:var(--amber)">25%</span>
+          <span class="mono" style="font-size:10px;color:var(--red)">45%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: What affects price -->
+    <div style="background:var(--bg);display:flex;flex-direction:column">
+      <div style="padding:12px 20px;border-bottom:1px solid var(--border)">
+        <span class="lbl" style="color:var(--t3);font-size:10px">What affects the price</span>
+      </div>
+      <div style="padding:20px;flex:1">
+        <div class="lbl" style="color:var(--lime);margin-bottom:12px">Direct Inputs</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Match results</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Historical form & xG</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">League standings</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Home / away advantage</span></div>
+        </div>
+      </div>
+      <div style="padding:20px;border-top:1px solid var(--border);flex:1">
+        <div class="lbl" style="color:var(--purple);margin-bottom:12px">Market-Priced <span style="color:var(--t3)">(via odds)</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--purple);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Injuries & suspensions</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--purple);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Transfers & new signings</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--purple);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Manager changes</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--purple);flex-shrink:0"></div><span style="font-size:12px;color:var(--w)">Fixture congestion & fatigue</span></div>
+        </div>
+        <div style="margin-top:10px;font-size:10px;color:var(--t3)">Bookmakers price these within minutes. Our odds feed inherits the signal.</div>
+      </div>
+    </div>
+
+  </div>
+</div></div>
+
+<!-- 06 WHAT THIS ENABLES -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">07 · For the Trader</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">What this actually <span style="color:var(--lime)">looks like.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Real scenarios.</p>
+
+  <div class="g3" style="margin-top:32px">
+    <div class="card reveal d1" style="padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 140px">
+      <div style="padding:20px 24px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span class="mono" style="font-size:10px;font-weight:700;color:#0c0e12;background:var(--lime);padding:2px 6px;border-radius:2px">LONG</span>
+          <span class="mono" style="font-weight:700;font-size:13px;color:var(--w)">ARS</span>
+          <span class="mono" style="font-size:11px;color:var(--t3)">$182 → $214</span>
+        </div>
+        <div style="font-size:13px;color:var(--w);font-weight:600">"7-game win streak + new striker signing"</div>
+        <div class="card-body" style="margin-top:6px;font-size:12px">Hold through transfer window and run of form. Three months. Position compounds.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--border);position:relative">
+        <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:70%;opacity:.4"><defs><linearGradient id="gl2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b2ed68" stop-opacity=".3"/><stop offset="100%" stop-color="#b2ed68" stop-opacity="0"/></linearGradient></defs><path d="M0,40 10,38 20,35 30,32 40,28 50,24 60,20 70,16 80,12 90,8 100,5 100,50 0,50Z" fill="url(#gl2)"/><path d="M0,40 10,38 20,35 30,32 40,28 50,24 60,20 70,16 80,12 90,8 100,5" fill="none" stroke="#b2ed68" stroke-width="1.2"/></svg>
+        <div class="mono" style="font-weight:700;font-size:28px;color:var(--lime);position:relative">+17%</div>
+      </div>
+    </div>
+    <div class="card reveal d2" style="padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 140px">
+      <div style="padding:20px 24px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span class="mono" style="font-size:10px;font-weight:700;color:#0c0e12;background:var(--red);padding:2px 6px;border-radius:2px">SHORT</span>
+          <span class="mono" style="font-weight:700;font-size:13px;color:var(--w)">CHE</span>
+          <span class="mono" style="font-size:11px;color:var(--t3)">$198 → $179</span>
+        </div>
+        <div style="font-size:13px;color:var(--w);font-weight:600">"Chelsea sacked their manager. Again."</div>
+        <div class="card-body" style="margin-top:6px;font-size:12px">New manager bounce lasts two games. Reality sets in. A month later, 6 points dropped.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--border);position:relative">
+        <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:70%;opacity:.4"><defs><linearGradient id="gr2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ef6b6b" stop-opacity=".3"/><stop offset="100%" stop-color="#ef6b6b" stop-opacity="0"/></linearGradient></defs><path d="M0,10 10,12 20,11 30,15 40,20 50,24 60,28 70,30 80,34 90,38 100,42 100,50 0,50Z" fill="url(#gr2)"/><path d="M0,10 10,12 20,11 30,15 40,20 50,24 60,28 70,30 80,34 90,38 100,42" fill="none" stroke="#ef6b6b" stroke-width="1.2"/></svg>
+        <div class="mono" style="font-weight:700;font-size:28px;color:var(--lime);position:relative">+9.6%</div>
+      </div>
+    </div>
+    <div class="card reveal d3" style="padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 140px">
+      <div style="padding:20px 24px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span class="mono" style="font-size:10px;font-weight:700;color:#0c0e12;background:var(--lime);padding:2px 6px;border-radius:2px">LONG</span>
+          <span class="mono" style="font-weight:700;font-size:13px;color:var(--w)">MUN</span>
+          <span class="mono" style="font-size:11px;color:var(--t3)">$165 → $203</span>
+        </div>
+        <div style="font-size:13px;color:var(--w);font-weight:600">"I've supported United my whole life."</div>
+        <div class="card-body" style="margin-top:6px;font-size:12px">You go long at the start of the season and hold. Every win, every signing, every climb up the table — your position grows. The closest thing to owning a piece of your club.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--border);position:relative">
+        <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:70%;opacity:.4"><defs><linearGradient id="gf2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b2ed68" stop-opacity=".3"/><stop offset="100%" stop-color="#b2ed68" stop-opacity="0"/></linearGradient></defs><path d="M0,42 8,40 16,38 24,37 32,34 40,32 48,30 56,27 64,24 72,20 80,17 88,13 96,10 100,8 100,50 0,50Z" fill="url(#gf2)"/><path d="M0,42 8,40 16,38 24,37 32,34 40,32 48,30 56,27 64,24 72,20 80,17 88,13 96,10 100,8" fill="none" stroke="#b2ed68" stroke-width="1.2"/></svg>
+        <div class="mono" style="font-weight:700;font-size:28px;color:var(--lime);position:relative">+23%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout reveal d4"><span>None of this exists today. Every one of these positions would expire at the final whistle on a sportsbook. On Tail.trade, they compound — and for the first time, fans can own their conviction.</span></div>
+</div></div>
+
+<!-- 06 ARCHITECTURE -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">08 · Architecture</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Three entities needed.</div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Separating pricing, clearing, and distribution creates regulatory isolation and compounding defensibility at each layer.</p>
+  <div class="g3" style="margin-top:32px">
+    <div class="card reveal d1" style="padding:28px"><div class="bar-t" style="background:var(--purple)"></div><div class="lbl" style="color:var(--purple)">Prices the Asset</div><div class="mono upper" style="font-weight:700;font-size:20px;color:var(--w);margin-top:12px">ORACLE COMPANY</div><div class="card-body" style="margin-top:16px">Proprietary algorithm synthesizes odds, results, injuries, transfers, and sentiment into a continuous team price index.</div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)"><div class="lbl" style="color:var(--t3);margin-bottom:4px">Key insight</div><div style="font-size:12px;color:var(--t1)">The price has value beyond our own exchange. Other venues will pay for it.</div></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="background:#000;border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:center;height:56px"><img src="assets/kops.svg" style="height:24px;width:auto;max-width:100%;display:block" alt="KOPS"></div><a href="https://kops.ai" target="_blank" class="mono" style="font-size:11px;color:var(--purple);display:block;text-align:center;margin-top:8px">kops.ai</a></div></div>
+    <div class="card reveal d2" style="padding:28px"><div class="bar-t" style="background:var(--blue)"></div><div class="lbl" style="color:var(--blue)">Is the Market</div><div class="mono upper" style="font-weight:700;font-size:20px;color:var(--w);margin-top:12px">PERP DEX</div><div class="card-body" style="margin-top:16px">Order matching, margin, funding, and liquidation turn the price into a tradable market.</div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)"><div class="lbl" style="color:var(--t3);margin-bottom:4px">Key insight</div><div style="font-size:12px;color:var(--t1)">Hyperliquid model. Builder codes for all existing sports betting platforms.</div></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="background:#000;border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:center;height:56px"><img src="assets/tail.trade.svg" style="height:24px;width:auto;max-width:100%;display:block" alt="TAIL.TRADE"></div><a href="https://tail.trade" target="_blank" class="mono" style="font-size:11px;color:var(--blue);display:block;text-align:center;margin-top:8px">tail.trade</a></div></div>
+    <div class="card reveal d3" style="padding:28px"><div class="bar-t" style="background:var(--lime)"></div><div class="lbl" style="color:var(--lime)">Distributes to Retail</div><div class="mono upper" style="font-weight:700;font-size:20px;color:var(--w);margin-top:12px">CONSUMER APP</div><div class="card-body" style="margin-top:16px">Consumer UX, non-custodial wallet, and fiat on-ramp make the perp market accessible to anyone with a phone.</div><div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)"><div class="lbl" style="color:var(--t3);margin-bottom:4px">Key insight</div><div style="font-size:12px;color:var(--t1)">Enables retail to participate via fiat. The only entity that touches regulators.</div></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="background:#000;border-radius:4px;padding:16px 20px;display:flex;align-items:center;justify-content:center;height:56px"><img src="assets/notch.svg" style="height:24px;width:auto;max-width:100%;display:block" alt="NOTCH"></div><a href="https://notch.win" target="_blank" class="mono" style="font-size:11px;color:var(--lime);display:block;text-align:center;margin-top:8px">notch.win</a></div></div>
+  </div>
+
+</div></div>
+
+<!-- 07 WHY WE WIN -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">09 · Why We Win</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Event markets kill liquidity. <span style="color:var(--lime)">Our perps let it stack.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Match-based products lose their entire liquidity pool at the final whistle. Persistent positions let liquidity stack.</p>
+  
+  <!-- Side-by-side liquidity comparison chart -->
+  <div class="reveal d2" style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
+    <div style="background:var(--bg);padding:20px 20px 0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="width:6px;height:6px;background:var(--red)"></div><span class="lbl" style="color:var(--red)">Sportsbook & Prediction Market Model</span></div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Liquidity resets to zero after every event</div>
+      <canvas id="chart-sawtooth" style="width:100%;height:200px;display:block"></canvas>
+    </div>
+    <div style="background:var(--bg);padding:20px 20px 0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="width:6px;height:6px;background:var(--lime)"></div><span class="lbl" style="color:var(--lime)">Tail.trade Model</span></div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Positions persist — liquidity accumulates</div>
+      <canvas id="chart-staircase" style="width:100%;height:200px;display:block"></canvas>
+    </div>
+  </div>
+  <div class="reveal d2" style="background:var(--bg);border:1px solid var(--border);border-top:none;padding:12px 20px;display:flex;justify-content:center;gap:32px">
+    <div style="display:flex;align-items:center;gap:6px"><div class="mono" style="font-size:11px;color:var(--t3)">←</div><span style="font-size:12px;color:var(--t2)">Match events across seasons — positions never expire</span><div class="mono" style="font-size:11px;color:var(--t3)">→</div></div>
+  </div>
+
+  <!-- Flywheel as horizontal flow -->
+  <div class="reveal d3" style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:0;overflow-x:hidden;flex-wrap:nowrap;padding:24px 0">
+    <div style="text-align:center;padding:0 16px;min-width:100px"><div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);line-height:18px">Traders open<br>positions</div></div>
+    <div class="mono" style="color:var(--t3);font-size:14px;flex-shrink:0">→</div>
+    <div style="text-align:center;padding:0 16px;min-width:100px"><div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);line-height:18px">Deeper<br>liquidity</div></div>
+    <div class="mono" style="color:var(--t3);font-size:14px;flex-shrink:0">→</div>
+    <div style="text-align:center;padding:0 16px;min-width:100px"><div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);line-height:18px">Better price<br>discovery</div></div>
+    <div class="mono" style="color:var(--t3);font-size:14px;flex-shrink:0">→</div>
+    <div style="text-align:center;padding:0 16px;min-width:100px"><div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);line-height:18px">More<br>credibility</div></div>
+    <div class="mono" style="color:var(--t3);font-size:14px;flex-shrink:0">→</div>
+    <div style="text-align:center;padding:0 16px;min-width:100px"><div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);line-height:18px">More<br>traders</div></div>
+    <div class="mono" style="color:var(--t3);font-size:14px;flex-shrink:0">↻</div>
+  </div>
+
+</div></div>
+
+<!-- 08 MARKET -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">10 · Market</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">We sit at the intersection of three <span style="color:var(--lime)">already-proven markets.</span></div>
+
+  <!-- Three market columns -->
+  <div class="g3" style="margin-top:40px">
+    <div class="card reveal d1" style="padding:32px;text-align:center">
+      <div class="lbl" style="color:var(--lime)">Sports Wagering</div>
+      <div class="mono" style="font-weight:700;font-size:36px;color:var(--w);margin-top:16px">$166.9B</div>
+      <div class="stat-lbl">U.S. handle 2025</div>
+      <div style="font-size:13px;color:var(--t1);margin-top:16px">The audience and the habit already exist at massive scale.</div>
+    </div>
+    <div class="card reveal d2" style="padding:32px;text-align:center">
+      <div class="lbl" style="color:var(--purple)">Prediction Markets</div>
+      <div class="mono" style="font-weight:700;font-size:36px;color:var(--w);margin-top:16px">$64B</div>
+      <div class="stat-lbl">2025 volume</div>
+      <div style="font-size:13px;color:var(--t1);margin-top:16px">Sports pulled prediction markets mainstream. Users already think in market terms.</div>
+    </div>
+    <div class="card reveal d3" style="padding:32px;text-align:center">
+      <div class="lbl" style="color:var(--blue)">Perp Exchanges</div>
+      <div class="mono" style="font-weight:700;font-size:36px;color:var(--w);margin-top:16px">$6.7T</div>
+      <div class="stat-lbl">Perp DEX volume 2025</div>
+      <div style="font-size:13px;color:var(--t1);margin-top:16px">Persistent, leveraged trading is now a familiar crypto-native behavior.</div>
+    </div>
+  </div>
+
+  <!-- Tail.trade = the intersection -->
+  <div class="reveal d3" style="margin-top:24px;text-align:center;padding:28px 32px;border:1px solid var(--lime);position:relative">
+    <div style="position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lime),var(--purple),var(--blue))"></div>
+    <div class="mono upper" style="font-weight:700;font-size:20px;color:var(--lime)">TAIL.TRADE</div>
+    <div style="font-size:15px;color:var(--w);margin-top:8px">The first venue for continuous team-level sports positions</div>
+    <div style="font-size:13px;color:var(--t2);margin-top:4px">Audience from wagering · Market format from prediction markets · Infrastructure from perps</div>
+  </div>
+</div></div>
+
+<!-- 08.5 COMPETITORS -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">11 · Competitors</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Competitors <span style="color:var(--lime)">aka Sources of Liquidity.</span></div>
+  <div class="g3" style="margin-top:32px">
+    <div class="card reveal d1" style="padding:28px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><img loading="lazy" src="assets/img/img_1_bec86799.png" style="width:32px;height:32px;border-radius:6px"><img loading="lazy" src="assets/img/img_2_dd5c6077.png" style="width:32px;height:32px;border-radius:6px"><img loading="lazy" src="assets/img/img_3_c6d3008c.png" style="width:32px;height:32px;border-radius:6px"></div><div class="card-title">Bet365 · FanDuel · DraftKings</div><div class="card-title" style="color:var(--lime);margin-bottom:16px">Sportsbooks</div><div class="card-body">Their users already trade team-level opinions with real money. Every bettor whose position dies at the final whistle is a potential Tail.trade user whose position doesn't have to.</div></div>
+    <div class="card reveal d2" style="padding:28px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><img loading="lazy" src="assets/img/img_4_f49981db.png" style="width:32px;height:32px;border-radius:6px"><img loading="lazy" src="assets/img/img_5_1d68af5d.png" style="width:32px;height:32px;border-radius:6px"></div><div class="card-title">Polymarket · Kalshi</div><div class="card-title" style="color:var(--purple);margin-bottom:16px">Prediction Markets</div><div class="card-body">Their traders already think in market terms. Every binary that expires is a user who could hold a continuous position instead. Same instinct, better instrument.</div></div>
+    <div class="card reveal d3" style="padding:28px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><img loading="lazy" src="assets/img/img_6_f369890a.png" style="width:32px;height:32px;border-radius:6px"><img loading="lazy" src="assets/img/img_7_ca78d1d5.jpg" style="width:32px;height:32px;border-radius:6px"></div><div class="card-title">Hyperliquid · Lighter</div><div class="card-title" style="color:var(--blue);margin-bottom:16px">Perp DEXs</div><div class="card-body">Their traders are fluent in leverage, funding, and margin. Sports gives them an entirely new uncorrelated asset class — same mechanics, fresh alpha.</div></div>
+  </div>
+</div></div>
+
+<!-- 09 TRACTION -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">12 · Traction</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Ready to <span style="color:var(--lime)">scale.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Core infrastructure is live. Capital goes to growth, not R&D.</p>
+  <div class="g3" style="margin-top:32px">
+    <div class="card reveal d1" style="padding:24px"><div class="bar-t" style="background:var(--purple)"></div><div class="card-title" style="display:flex;align-items:center;gap:8px">Oracle <div class="pulse"></div><span class="mono" style="font-size:10px;color:var(--lime);font-weight:400">LIVE</span></div><div class="card-body" style="margin-top:12px">Live price feeds ready for:</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:baseline;gap:8px"><span class="mono" style="font-weight:700;font-size:12px;color:var(--w);min-width:50px">Soccer</span><span style="font-size:11px;color:var(--t2)">96 teams — EPL · La Liga · Bundesliga · Serie A · Ligue 1 · CL</span></div><div style="display:flex;align-items:baseline;gap:8px"><span class="mono" style="font-weight:700;font-size:12px;color:var(--w);min-width:50px">NBA</span><span style="font-size:11px;color:var(--t2)">Full league coverage</span></div><div style="display:flex;align-items:baseline;gap:8px"><span class="mono" style="font-weight:700;font-size:12px;color:var(--w);min-width:50px">MLB</span><span style="font-size:11px;color:var(--t2)">Full league coverage</span></div><div style="display:flex;align-items:baseline;gap:8px"><span class="mono" style="font-weight:700;font-size:12px;color:var(--w);min-width:50px">Tennis</span><span style="font-size:11px;color:var(--t2)">ATP top 500 · WTA top 500</span></div></div></div>
+    <div class="card reveal d2" style="padding:24px"><div class="bar-t" style="background:var(--blue)"></div><div class="card-title" style="display:flex;align-items:center;gap:8px">Perp DEX <div class="pulse"></div><span class="mono" style="font-size:10px;color:var(--lime);font-weight:400">LIVE</span></div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--blue);flex-shrink:0"></div><span style="font-size:13px;color:var(--w)">Non-custodial Perp DEX on Solana</span></div><div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--blue);flex-shrink:0"></div><span style="font-size:13px;color:var(--w)">13 markets live</span></div><div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--blue);flex-shrink:0"></div><span style="font-size:13px;color:var(--w)">Pro trading UI</span></div></div></div>
+    <div class="card reveal d3" style="padding:24px"><div class="bar-t" style="background:var(--lime)"></div><div class="card-title" style="display:flex;align-items:center;gap:8px">Consumer App <span class="mono" style="font-size:10px;color:var(--amber);font-weight:400">IN DEV</span></div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:13px;color:var(--w)">Retail-oriented UX</span></div><div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:13px;color:var(--w)">Create leagues with friends + social</span></div><div style="display:flex;align-items:center;gap:8px"><div style="width:4px;height:4px;background:var(--lime);flex-shrink:0"></div><span style="font-size:13px;color:var(--w)">Fiat on-ramp integration</span></div></div></div>
+  </div>
+</div></div>
+
+<!-- 10 ROADMAP -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">13 · Roadmap</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Soccer markets are <span style="color:var(--lime)">already live.</span></div>
+  <div class="g4" style="margin-top:32px">
+    <div class="card reveal d1" style="padding:24px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><img loading="lazy" src="assets/img/img_8_9d4e0eb0.png" style="width:28px;height:28px;border-radius:4px"><img loading="lazy" src="assets/img/img_9_2c416dd6.png" style="width:28px;height:28px;border-radius:4px"><img loading="lazy" src="assets/img/img_10_2ae7e55d.png" style="width:28px;height:28px;border-radius:4px"><img loading="lazy" src="assets/img/img_11_dec8e271.png" style="width:28px;height:28px;border-radius:4px"><img loading="lazy" src="assets/img/img_12_ca78d1d5.png" style="width:28px;height:28px;border-radius:4px"></div><div class="bar-t" style="background:var(--lime)"></div><div class="card-title">Phase 1</div><div class="card-body">Soccer<br>Perp DEX live</div></div>
+    <div class="card reveal d2" style="padding:24px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><img loading="lazy" src="assets/img/img_13_85aef283.png" style="width:28px;height:28px;border-radius:4px"></div><div class="bar-t" style="background:var(--blue)"></div><div class="card-title">Phase 2</div><div class="card-body">Baseball<br>Consumer App<br>Fiat on-ramp</div></div>
+    <div class="card reveal d3" style="padding:24px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><img loading="lazy" src="assets/img/img_14_d79dab0c.png" style="width:28px;height:28px;border-radius:4px"></div><div class="bar-t" style="background:var(--amber)"></div><div class="card-title">Phase 3</div><div class="card-body">Basketball<br>Scale</div></div>
+    <div class="card reveal d4" style="padding:24px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><img loading="lazy" src="assets/img/img_15_d1eee6f1.png" style="width:28px;height:28px;border-radius:4px"><img loading="lazy" src="assets/img/img_16_8a45ae67.png" style="width:28px;height:28px;border-radius:4px"></div><div class="bar-t" style="background:var(--purple)"></div><div class="card-title">Phase 4</div><div class="card-body">NHL / Tennis + more<br>Institutional APIs<br>Licensing surface</div></div>
+  </div>
+</div></div>
+
+<!-- 11 TEAM -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">14 · Team</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Team.</div>
+  <div class="g3" style="margin-top:32px">
+    <div class="card reveal d1" style="padding:28px"><div class="bar-t" style="background:var(--lime)"></div><div class="card-title">Igor / CEO</div><div class="card-body" style="margin-top:8px">1 exit. Built the first multichain oracle in 2018, scaled identity and DePIN products to 1M+ users, ran over 1B+ OTC. Deep background across crypto, exchanges, and oracle systems.</div></div>
+    <div class="card reveal d2" style="padding:28px"><div class="bar-t" style="background:var(--purple)"></div><div class="card-title">Ngoc / CTO</div><div class="card-body" style="margin-top:8px">CTO in multiple large-scale AI and crypto ventures. Previously Lead BA in IT at MGM — managed telebetting systems, oversaw 10+ casino software integrations. 20+ years across gaming, AI, and decentralized infrastructure.</div></div>
+    <div class="card reveal d3" style="padding:28px"><div class="bar-t" style="background:var(--blue)"></div><div class="card-title">Son / Head of Infra</div><div class="card-body" style="margin-top:8px">Built the real-time pricing engine behind Treehouse — a DeFi protocol that hit $500M+ TVL. Previously architected national-scale critical infrastructure serving 1.6M users across healthcare, education, and government.</div></div>
+  </div>
+</div></div>
+
+<!-- 12 THE ASK -->
+<div class="sec"><div class="sec-inner" style="text-align:center">
+  <div class="lbl reveal" style="color:var(--t2)">15 · The Ask</div>
+  <div class="h2 reveal d1" style="margin-top:20px">Seed Round.</div>
+  <div class="g3" style="margin-top:32px;text-align:center">
+    <div class="card reveal d1" style="padding:32px"><div class="mono" style="font-weight:700;font-size:36px;color:var(--lime)">$5M</div><div class="stat-lbl" style="margin-top:8px">Target Raise</div></div>
+    <div class="card reveal d2" style="padding:32px"><div class="mono" style="font-weight:700;font-size:36px;color:var(--w)">$50M</div><div class="stat-lbl" style="margin-top:8px">Post-Money Valuation</div></div>
+    <div class="card reveal d3" style="padding:32px"><div class="mono" style="font-weight:700;font-size:16px;color:var(--w);line-height:28px">SAFE (Post-Money)<br>+ Token Warrant</div><div class="stat-lbl" style="margin-top:8px">Instrument</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:1px;text-align:left">
+    <div class="card reveal d1" style="padding:20px;background:var(--bg)"><div class="mono" style="font-weight:700;font-size:20px;color:var(--lime)">50%</div><div class="card-body" style="margin-top:4px">Engineering</div></div>
+    <div class="card reveal d2" style="padding:20px;background:var(--bg)"><div class="mono" style="font-weight:700;font-size:20px;color:var(--blue)">25%</div><div class="card-body" style="margin-top:4px">GTM</div></div>
+    <div class="card reveal d3" style="padding:20px;background:var(--bg)"><div class="mono" style="font-weight:700;font-size:20px;color:var(--purple)">10%</div><div class="card-body" style="margin-top:4px">Market seeding</div></div>
+    <div class="card reveal d3" style="padding:20px;background:var(--bg)"><div class="mono" style="font-weight:700;font-size:20px;color:var(--amber)">10%</div><div class="card-body" style="margin-top:4px">Legal / compliance</div></div>
+    <div class="card reveal d4" style="padding:20px;background:var(--bg)"><div class="mono" style="font-weight:700;font-size:20px;color:var(--t2)">5%</div><div class="card-body" style="margin-top:4px">Oracle / data</div></div>
+  </div>
+
+</div></div>
+
+
+<!-- 13 LEGAL WEDGE -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">16 · Legal Wedge</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">$4.5B in capital can't legally operate in all 50 states. <span style="color:var(--lime)">We can. By design.</span></div>
+
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Tail.trade is a derivative, not an event contract. That means one federal license, 50-state access, and the entire market from day one — while they litigate state by state for years.</p>
+
+  <!-- Two columns -->
+  <div style="display:grid;grid-template-columns:3fr 5fr;gap:1px;background:var(--border);margin-top:32px">
+
+    <!-- LEFT: Event Contracts -->
+    <div class="card reveal d3" style="padding:28px;border-left:2px solid var(--red);background:var(--bg)">
+      <div class="lbl" style="color:var(--red);margin-bottom:20px">Kalshi / Polymarket Architecture</div>
+
+      <div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--t2);line-height:1.6">The structural flaw: "Will Arsenal win? Yes=$1 / No=$0" is a <span style="color:var(--red);font-weight:600">binary bet on a game outcome</span>. States classify it as gambling.</div>
+
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span class="mono" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;background:rgba(239,107,107,.2);color:var(--red);white-space:nowrap">CRIMINAL</span>
+          <span style="font-size:12px;color:var(--t1);flex:1"><span style="color:var(--w);font-weight:600">Arizona</span> — 20 felony counts, unlicensed gambling</span>
+          <span class="mono" style="font-size:10px;color:var(--t3)">Mar 17</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span class="mono" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;background:rgba(239,107,107,.12);color:var(--red);white-space:nowrap">HALTED</span>
+          <span style="font-size:12px;color:var(--t1);flex:1"><span style="color:var(--w);font-weight:600">Nevada</span> — TRO, all operations shut down</span>
+          <span class="mono" style="font-size:10px;color:var(--t3)">Mar 20</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span class="mono" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;background:rgba(245,197,66,.12);color:var(--amber);white-space:nowrap">BANNED</span>
+          <span style="font-size:12px;color:var(--t1);flex:1"><span style="color:var(--w);font-weight:600">Massachusetts</span> — injunction, no sports contracts</span>
+          <span class="mono" style="font-size:10px;color:var(--t3)">Jan 20</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+          <span class="mono" style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:2px;background:rgba(96,98,103,.15);color:var(--t3);white-space:nowrap">C&D</span>
+          <span style="font-size:12px;color:var(--t1);flex:1"><span style="color:var(--w);font-weight:600">OH, IL, MD, UT</span> + 7 more states</span>
+          <span class="mono" style="font-size:10px;color:var(--t3)">2025–26</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Perpetual Derivative -->
+    <div class="card reveal d4" style="padding:28px;border-left:2px solid var(--lime)">
+      <div class="lbl" style="color:var(--lime);margin-bottom:20px">Perpetual Derivative — Our Architecture</div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--w)">Index derivative, not an event bet</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px">Position tracks a continuous price index across 50+ matches. No binary payout. Does not meet CEA "gaming" definition.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--w)">Perps already live on US exchanges</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px">CFTC greenlit crypto perpetuals on Coinbase Derivatives, July 2025. Same instrument structure — different underlying.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--w)">Regulators are actively onshoring perps</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px">SEC + CFTC "Project Crypto" summit, Jan 2026 — innovation exemptions for perpetual derivatives.</div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--w)">Clean swap classification</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:4px">Standard derivatives mechanics that courts and regulators already recognize. No novel legal theory required.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
+        <span class="mono" style="font-size:10px;padding:3px 8px;border-radius:2px;background:rgba(178,237,104,.08);color:var(--lime);border:1px solid rgba(178,237,104,.1)">CFTC PERP FRAMEWORK ✓</span>
+        <span class="mono" style="font-size:10px;padding:3px 8px;border-radius:2px;background:rgba(178,237,104,.08);color:var(--lime);border:1px solid rgba(178,237,104,.1)">INDEX DERIVATIVE ✓</span>
+        <span class="mono" style="font-size:10px;padding:3px 8px;border-radius:2px;background:rgba(178,237,104,.08);color:var(--lime);border:1px solid rgba(178,237,104,.1)">NO BINARY EVENT ✓</span>
+        <span class="mono" style="font-size:10px;padding:3px 8px;border-radius:2px;background:rgba(178,237,104,.08);color:var(--lime);border:1px solid rgba(178,237,104,.1)">50-STATE LEGAL ✓</span>
+      </div>
+    </div>
+
+  </div>
+
+</div></div>
+
+<!-- APPENDIX DIVIDER -->
+<div class="sec"><div class="sec-inner" style="min-height:calc(100vh - 57px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+  <div class="reveal"><span class="mono upper" style="font-weight:700;font-size:clamp(48px,8vw,80px);color:var(--w);letter-spacing:.15em">APPENDIX</span></div>
+  <div class="body reveal d1" style="margin-top:16px;font-size:16px;color:var(--t3)">Supporting data and additional context.</div>
+</div></div>
+
+<!-- APPENDIX: Revenue -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">A1 · Revenue</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">How Tail.trade <span style="color:var(--lime)">makes money.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Five revenue lines. No ads, no subscriptions — pure trading infrastructure.</p>
+
+  <!-- 5 revenue cards -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);margin-top:32px">
+    <div class="card reveal d1" style="padding:20px;background:var(--bg)">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div class="bar-t" style="background:var(--lime);flex:1"></div><span class="mono" style="font-size:9px;padding:2px 5px;background:rgba(178,237,104,.1);color:var(--lime);border-radius:2px">PRIMARY</span></div>
+      <div class="card-title" style="font-size:13px">Trading Fees</div>
+      <div class="card-body" style="margin-top:6px;font-size:11px">Taker / maker on every matched trade</div>
+    </div>
+    <div class="card reveal d2" style="padding:20px;background:var(--bg)">
+      <div class="bar-t" style="background:var(--blue)"></div>
+      <div class="card-title" style="font-size:13px">Funding Spread</div>
+      <div class="card-body" style="margin-top:6px;font-size:11px">Protocol captures spread on every funding payment</div>
+    </div>
+    <div class="card reveal d3" style="padding:20px;background:var(--bg)">
+      <div class="bar-t" style="background:var(--purple)"></div>
+      <div class="card-title" style="font-size:13px">Liquidation Fees</div>
+      <div class="card-body" style="margin-top:6px;font-size:11px">Collected when leveraged positions are liquidated</div>
+    </div>
+    <div class="card reveal d3" style="padding:20px;background:var(--bg)">
+      <div class="bar-t" style="background:var(--amber)"></div>
+      <div class="card-title" style="font-size:13px">Oracle Licensing</div>
+      <div class="card-body" style="margin-top:6px;font-size:11px">Price feed licensing to third-party venues</div>
+    </div>
+    <div class="card reveal d4" style="padding:20px;background:var(--bg)">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div class="bar-t" style="background:var(--lime);flex:1"></div><span class="mono" style="font-size:9px;padding:2px 5px;background:rgba(245,197,66,.1);color:var(--amber);border-radius:2px">HIGH CONVICTION</span></div>
+      <div class="card-title" style="font-size:13px">Builder Codes</div>
+      <div class="card-body" style="margin-top:6px;font-size:11px">Sportsbooks plug in as frontends, earn per trade</div>
+    </div>
+  </div>
+
+  <!-- Fee comparison table -->
+  <div class="reveal d2" style="margin-top:32px;border:1px solid var(--border);overflow:hidden">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;background:var(--hover)">
+      <div class="mono" style="font-size:11px;color:var(--t2);padding:12px 20px">Protocol</div>
+      <div class="mono" style="font-size:11px;color:var(--t2);padding:12px 16px;text-align:center">Maker</div>
+      <div class="mono" style="font-size:11px;color:var(--t2);padding:12px 16px;text-align:center">Taker</div>
+      <div class="mono" style="font-size:11px;color:var(--t2);padding:12px 16px;text-align:center">Blended</div>
+      <div class="mono" style="font-size:11px;color:var(--t2);padding:12px 16px;text-align:center">/ $1M vol</div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--t1);padding:10px 20px">Vertex</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">0</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">2</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">~2</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">$200</div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--t1);padding:10px 20px">Drift</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">0</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">5</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">~3</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">$300</div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--t1);padding:10px 20px">Hyperliquid (core)</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">1.0</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">3.5</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">~3.3</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">$330</div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--t1);padding:10px 20px">dYdX v4</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">1.0</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">5.0</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">~3.5</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">$350</div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--t1);padding:10px 20px">Hyperliquid HIP-3</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">3</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">9</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">~6.6</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">$660</div>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--t1);padding:10px 20px">GMX V2</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">4–6</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">4–6</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">~8–10</div>
+      <div class="mono" style="font-size:12px;color:var(--t2);padding:10px 16px;text-align:center">$900</div>
+    </div>
+    <!-- Tail.Trade row -->
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:2px solid var(--blue);background:rgba(91,141,239,.04)">
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--blue);padding:12px 20px">Tail.trade</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--blue);padding:12px 16px;text-align:center">2</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--blue);padding:12px 16px;text-align:center">8</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--blue);padding:12px 16px;text-align:center">10</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--blue);padding:12px 16px;text-align:center">$1,000</div>
+    </div>
+    <!-- Notch.win row -->
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-top:2px solid var(--lime);background:rgba(178,237,104,.04)">
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);padding:12px 20px">Notch.win (For Retail)</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);padding:12px 16px;text-align:center">10</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);padding:12px 16px;text-align:center">20</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);padding:12px 16px;text-align:center">30</div>
+      <div class="mono" style="font-weight:700;font-size:13px;color:var(--lime);padding:12px 16px;text-align:center">$3,000</div>
+    </div>
+  </div>
+  <div class="reveal d2" style="margin-top:8px;font-size:11px;color:var(--t3)">All rates in bps. Data: DefiLlama, Dune, protocol docs (Mar 2026).</div>
+
+  <!-- Revenue scenarios -->
+  <div class="g3" style="margin-top:32px">
+    <div class="card reveal d3" style="padding:24px;text-align:center">
+      <div class="lbl" style="color:var(--t3);margin-bottom:8px">Conservative</div>
+      <div class="mono" style="font-weight:700;font-size:28px;color:var(--w)">$5.5M/yr</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:8px">$10M/day avg volume<br>15 bps blended</div>
+    </div>
+    <div class="card reveal d3" style="padding:24px;text-align:center">
+      <div class="lbl" style="color:var(--lime);margin-bottom:8px">Base</div>
+      <div class="mono" style="font-weight:700;font-size:28px;color:var(--lime)">$27.4M/yr</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:8px">$50M/day avg volume<br>15 bps blended</div>
+    </div>
+    <div class="card reveal d4" style="padding:24px;text-align:center">
+      <div class="lbl" style="color:var(--t3);margin-bottom:8px">Upside</div>
+      <div class="mono" style="font-weight:700;font-size:28px;color:var(--w)">$164.3M/yr</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:8px">$300M/day avg volume<br>15 bps blended</div>
+    </div>
+  </div>
+
+  <!-- Builder Codes note -->
+  <div class="callout reveal d4"><span><span style="color:var(--w);font-weight:700">Builder Codes:</span> Sportsbooks plug into Tail.trade as frontends and earn per trade. We don't acquire users — their apps acquire users for us.</span></div>
+</div></div>
+
+<!-- APPENDIX: Tokenomics -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">A2 · $NTCH</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Tokenomics.</div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Potential tokenomics allocation map.</p>
+
+  <!-- Total supply -->
+  <div class="reveal d2" style="margin-top:32px;display:flex;justify-content:space-between;align-items:baseline;padding-bottom:16px;border-bottom:1px solid var(--lime)">
+    <span class="lbl" style="color:var(--lime)">Total Supply</span>
+    <span class="mono" style="font-weight:700;font-size:28px;color:var(--w)">1,000,000,000</span>
+  </div>
+
+  <!-- Table header -->
+  <div class="reveal d2" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:16px 0 8px;border-bottom:1px solid var(--border)">
+    <span class="lbl" style="color:var(--t2)">Allocation</span>
+    <span class="lbl" style="color:var(--t2);text-align:right">%</span>
+    <span class="lbl" style="color:var(--t2);text-align:right">Tokens</span>
+    <span class="lbl" style="color:var(--t2);text-align:right">Vesting</span>
+  </div>
+
+  <!-- Rows — community/ecosystem in lime, investors in amber, team/ops in t1 -->
+  <div class="reveal d2" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--lime);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Community / Airdrops</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--lime);text-align:right">30%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">300,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">10% at TGE (100M liquid), 20% over 36mo</span>
+  </div>
+  <div class="reveal d2" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--lime);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Treasury / Foundation</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--lime);text-align:right">15%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">150,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">Governance-gated</span>
+  </div>
+  <div class="reveal d2" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--lime);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Ecosystem / Builders</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--lime);text-align:right">8%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">80,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">Partner incentives</span>
+  </div>
+  <div class="reveal d3" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--amber);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Seed Round</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--amber);text-align:right">10%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">100,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">1yr cliff, 24mo linear vest</span>
+  </div>
+  <div class="reveal d3" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--amber);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Future Rounds</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--amber);text-align:right">15%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">150,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">Reserved for Series A / B</span>
+  </div>
+  <div class="reveal d3" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--t2);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Liquidity</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--t1);text-align:right">5%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">50,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">Unlocked at TGE</span>
+  </div>
+  <div class="reveal d4" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--t2);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Core Team</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--t1);text-align:right">15%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">150,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">1yr cliff, 36mo linear vest</span>
+  </div>
+  <div class="reveal d4" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:14px 0;border-bottom:1px solid var(--border);align-items:center">
+    <div style="display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;background:var(--t2);flex-shrink:0;border-radius:1px"></div><span style="font-size:13px;color:var(--w)">Advisors</span></div>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--t1);text-align:right">2%</span>
+    <span class="mono" style="font-size:12px;color:var(--t1);text-align:right">20,000,000</span>
+    <span style="font-size:12px;color:var(--t2);text-align:right">1yr cliff, 24mo linear vest</span>
+  </div>
+
+  <!-- Total row -->
+  <div class="reveal d4" style="display:grid;grid-template-columns:2.5fr 0.8fr 1.2fr 2fr;gap:0;padding:16px 0 0;align-items:center">
+    <span class="mono" style="font-size:13px;color:var(--lime)">Total</span>
+    <span class="mono" style="font-weight:700;font-size:14px;color:var(--lime);text-align:right">100%</span>
+    <span class="mono" style="font-size:12px;color:var(--lime);text-align:right">1,000,000,000</span>
+    <span></span>
+  </div>
+
+</div></div>
+
+<!-- APPENDIX: Oracle Coverage -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">A3 · Oracle Coverage</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">24/7 · 365. <span style="color:var(--lime)">Markets never close.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">Colored blocks = peak match density. Dotted = offseason, markets still open.</p>
+
+  <!-- Calendar grid -->
+  <div class="reveal d2">
+    <div>
+
+      <!-- Month headers -->
+      <div style="display:grid;grid-template-columns:180px repeat(12,1fr);gap:3px;margin-bottom:8px">
+        <div></div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Jan</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Feb</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Mar</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Apr</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">May</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Jun</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Jul</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Aug</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Sep</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Oct</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Nov</div>
+        <div class="mono" style="font-size:15px;color:var(--t2);text-align:center">Dec</div>
+      </div>
+
+      <!-- Soccer row -->
+      <div style="display:grid;grid-template-columns:180px repeat(12,1fr);gap:3px;margin-bottom:4px">
+        <div><div class="mono" style="font-weight:700;font-size:18px;color:var(--w)">Soccer</div><div style="font-size:13px;color:var(--t3)">~55 games per team · 10 mo</div></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.5"></div>
+        <div style="background:rgba(178,237,104,.1);border:1px dashed rgba(178,237,104,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(178,237,104,.1);border:1px dashed rgba(178,237,104,.25);border-radius:3px;height:48px"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--lime);border-radius:3px;height:48px;opacity:.85"></div>
+      </div>
+
+      <!-- NBA row -->
+      <div style="display:grid;grid-template-columns:180px repeat(12,1fr);gap:3px;margin-bottom:4px">
+        <div><div class="mono" style="font-weight:700;font-size:18px;color:var(--w)">NBA</div><div style="font-size:13px;color:var(--t3)">~100 games per team · 9 mo</div></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.5"></div>
+        <div style="background:rgba(167,139,250,.1);border:1px dashed rgba(167,139,250,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(167,139,250,.1);border:1px dashed rgba(167,139,250,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(167,139,250,.1);border:1px dashed rgba(167,139,250,.25);border-radius:3px;height:48px"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--purple);border-radius:3px;height:48px;opacity:.85"></div>
+      </div>
+
+      <!-- NHL row -->
+      <div style="display:grid;grid-template-columns:180px repeat(12,1fr);gap:3px;margin-bottom:4px">
+        <div><div class="mono" style="font-weight:700;font-size:18px;color:var(--w)">NHL</div><div style="font-size:13px;color:var(--t3)">~100 games per team · 9 mo</div></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.5"></div>
+        <div style="background:rgba(91,141,239,.1);border:1px dashed rgba(91,141,239,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(91,141,239,.1);border:1px dashed rgba(91,141,239,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(91,141,239,.1);border:1px dashed rgba(91,141,239,.25);border-radius:3px;height:48px"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--blue);border-radius:3px;height:48px;opacity:.85"></div>
+      </div>
+
+      <!-- MLB row -->
+      <div style="display:grid;grid-template-columns:180px repeat(12,1fr);gap:3px;margin-bottom:16px">
+        <div><div class="mono" style="font-weight:700;font-size:18px;color:var(--w)">MLB</div><div style="font-size:13px;color:var(--t3)">~175 games · 7 mo</div></div>
+        <div style="background:rgba(245,197,66,.1);border:1px dashed rgba(245,197,66,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(245,197,66,.1);border:1px dashed rgba(245,197,66,.25);border-radius:3px;height:48px"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.85"></div>
+        <div style="background:var(--amber);border-radius:3px;height:48px;opacity:.5"></div>
+        <div style="background:rgba(245,197,66,.1);border:1px dashed rgba(245,197,66,.25);border-radius:3px;height:48px"></div>
+        <div style="background:rgba(245,197,66,.1);border:1px dashed rgba(245,197,66,.25);border-radius:3px;height:48px"></div>
+      </div>
+
+      <!-- Divider -->
+      <div style="height:1px;background:var(--border);margin:8px 0 16px"></div>
+
+      <!-- Leagues active row -->
+      <div style="display:grid;grid-template-columns:180px repeat(12,1fr);gap:3px">
+        <div><div class="mono" style="font-weight:700;font-size:15px;color:var(--t1)">Leagues<br>active</div></div>
+        <div class="mono" style="background:rgba(178,237,104,.15);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">3</div>
+        <div class="mono" style="background:rgba(178,237,104,.15);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">3</div>
+        <div class="mono" style="background:rgba(178,237,104,.25);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">4</div>
+        <div class="mono" style="background:rgba(178,237,104,.25);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">4</div>
+        <div class="mono" style="background:rgba(178,237,104,.25);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">4</div>
+        <div class="mono" style="background:rgba(178,237,104,.15);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">3</div>
+        <div class="mono" style="background:rgba(178,237,104,.08);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--t2)">1</div>
+        <div class="mono" style="background:rgba(178,237,104,.08);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--t2)">1</div>
+        <div class="mono" style="background:rgba(178,237,104,.1);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--t1)">2</div>
+        <div class="mono" style="background:rgba(178,237,104,.25);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">4</div>
+        <div class="mono" style="background:rgba(178,237,104,.15);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">3</div>
+        <div class="mono" style="background:rgba(178,237,104,.15);border-radius:3px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--lime)">3</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="reveal d3" style="margin-top:32px;display:flex;justify-content:center;gap:32px">
+    <div style="text-align:center"><div class="mono" style="font-weight:700;font-size:20px;color:var(--lime)">12/12</div><div style="font-size:11px;color:var(--t3);margin-top:2px">MONTHS COVERED</div></div>
+    <div style="width:1px;background:var(--border)"></div>
+    <div style="text-align:center"><div class="mono" style="font-weight:700;font-size:20px;color:var(--lime)">~430</div><div style="font-size:11px;color:var(--t3);margin-top:2px">EVENTS / YEAR</div></div>
+    <div style="width:1px;background:var(--border)"></div>
+    <div style="text-align:center"><div class="mono" style="font-weight:700;font-size:20px;color:var(--lime)">4</div><div style="font-size:11px;color:var(--t3);margin-top:2px">LEAGUES</div></div>
+  </div>
+
+  <!-- Off-season explainer -->
+  <div class="reveal d3" style="margin-top:40px;margin-bottom:8px"><span class="lbl" style="color:var(--t3)">Why off-season matters</span></div>
+  <p class="body reveal d3" style="max-width:600px;margin-bottom:24px">The off-season is when fundamentals get rewritten. Closing markets concentrates months of information into a single violent reopen gap. We stay live.</p>
+  <div class="g3" style="margin-top:0">
+    <div class="card reveal d3" style="padding:24px"><div class="bar-t" style="background:var(--lime)"></div><div class="card-title">Transfers + Free Agency</div><div class="card-body">The single biggest driver of team strength. A confirmed star signing reprices the entire team baseline — and it happens in the off-season.</div></div>
+    <div class="card reveal d3" style="padding:24px"><div class="bar-t" style="background:var(--amber)"></div><div class="card-title">Manager + Staff Changes</div><div class="card-body">A sacking or hire changes win probability, playing style, and market sentiment overnight. Overwhelmingly an off-season event.</div></div>
+    <div class="card reveal d4" style="padding:24px"><div class="bar-t" style="background:var(--blue)"></div><div class="card-title">Injury Returns + Surgery</div><div class="card-body">Star player availability is a first-order pricing input. Rehab timelines and preseason fitness — tradeable signals that only exist between seasons.</div></div>
+  </div>
+
+</div></div>
+
+<!-- APPENDIX: Brian Armstrong quote -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">A4 · Market Thesis</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Prediction markets are growing. <span style="color:var(--lime)">We absorb their output.</span></div>
+
+  <div class="reveal d2" style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
+
+    <!-- Left: Tweet screenshot -->
+    <div style="background:var(--bg);padding:24px;display:flex;align-items:center;justify-content:center">
+      <a href="https://x.com/brian_armstrong/status/2016593041532870677" target="_blank" style="display:block;max-width:480px;width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--border)">
+        <img loading="lazy" src="assets/img/img_17_6553a66c.jpg" style="width:100%;display:block;border-radius:12px" alt="Brian Armstrong tweet about prediction markets">
+      </a>
+    </div>
+
+    <!-- Right: Our take -->
+    <div style="background:var(--bg);padding:32px;display:flex;flex-direction:column;justify-content:center">
+      <div class="lbl" style="color:var(--lime);margin-bottom:16px">Our Take</div>
+      <div style="font-size:15px;color:var(--w);line-height:24px;font-weight:700">We agree. Truth = Oracle.</div>
+      <div style="font-size:14px;color:var(--t1);line-height:22px;margin-top:12px">As prediction market volume grows, our oracle directly benefits — more signal, better pricing, deeper liquidity. We don't compete with prediction markets. We absorb their output and build the next layer on top.</div>
+    </div>
+
+  </div>
+
+</div></div>
+
+<!-- APPENDIX: Paradigm data -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">A5 · Prediction Market Volume</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">1 month of Polymarket & Kalshi volume. <span style="color:var(--lime)">Sports dominates.</span></div>
+  <div class="reveal d2" style="margin-top:32px;border:1px solid var(--border);overflow:hidden">
+    <img loading="lazy" src="assets/img/img_18_6553a66c.jpg" style="width:100%;display:block" alt="Prediction Markets Volume Distribution from Paradigm">
+  </div>
+  <div class="reveal d2" style="margin-top:12px;text-align:right"><a href="https://predictions.paradigm.xyz" target="_blank" class="mono" style="font-size:12px;color:var(--t3)">Source: predictions.paradigm.xyz</a></div>
+</div></div>
+
+
+<!-- APPENDIX: Why Now -->
+<div class="sec"><div class="sec-inner">
+  <div class="lbl reveal" style="color:var(--t2)">A6 · Why Now</div>
+  <div class="h2 reveal d1" style="margin-top:20px;max-width:700px">Three things just happened. <span style="color:var(--lime)">None existed two years ago.</span></div>
+  <p class="body reveal d2" style="margin-top:12px;max-width:600px">The infrastructure, the audience, and the catalyst all arrived in the same window.</p>
+
+  <!-- Timeline rows -->
+  <div class="reveal d2" style="margin-top:40px">
+    <!-- Row 1: Hyperliquid -->
+    <div style="display:grid;grid-template-columns:80px 1fr;gap:0;border:1px solid var(--border);border-bottom:none">
+      <div style="display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);padding:24px 0">
+        <span class="mono" style="font-weight:700;font-size:16px;color:var(--blue)">2025</span>
+      </div>
+      <div style="padding:24px">
+        <div class="card-title" style="color:var(--blue)">HYPERLIQUID PROVED PERPS</div>
+        <div class="card-body" style="margin-top:8px">On-chain perpetual DEX scaled to $6.7T annualized volume. Proved the mechanic works without a centralized exchange. Robinhood and other retail trading venues are experiencing explosive growth.</div>
+        <div style="margin-top:16px"><span class="mono" style="font-weight:700;font-size:24px;color:var(--blue)">$6.7T</span><div class="stat-lbl">perp DEX vol 2025</div></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Polymarket -->
+    <div style="display:grid;grid-template-columns:80px 1fr;gap:0;border:1px solid var(--border);border-bottom:none">
+      <div style="display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);padding:24px 0">
+        <span class="mono" style="font-weight:700;font-size:16px;color:var(--purple)">2025</span>
+      </div>
+      <div style="padding:24px">
+        <div class="card-title" style="color:var(--purple)">POLYMARKET PROVED SPORTS</div>
+        <div class="card-body" style="margin-top:8px">Prediction markets went mainstream off the election — then sports became the fastest-growing vertical. Users already think in market terms.</div>
+        <div style="margin-top:16px"><span class="mono" style="font-weight:700;font-size:24px;color:var(--purple)">$64B</span><div class="stat-lbl">prediction vol 2025</div></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Legal War -->
+    <div style="display:grid;grid-template-columns:80px 1fr;gap:0;border:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:center;border-right:1px solid var(--border);padding:24px 0">
+        <span class="mono" style="font-weight:700;font-size:16px;color:var(--lime)">2026</span>
+      </div>
+      <div style="padding:24px">
+        <div class="card-title" style="color:var(--lime)">REGULATORS DECLARED WAR ON PREDICTION MARKETS</div>
+        <div class="card-body" style="margin-top:8px">12+ lawsuits across state and federal courts. Nevada, Arizona, Massachusetts all moving against Kalshi. A bipartisan Senate bill to ban sports contracts on prediction platforms. The legal window for binary-bet sports is closing — perpetual markets sit outside the blast radius.</div>
+        <div style="margin-top:16px"><span class="mono" style="font-weight:700;font-size:24px;color:var(--lime)">12+</span><div class="stat-lbl">active lawsuits in 2026</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout reveal d4"><span>The instrument is proven. The audience is trained. And the competition is getting sued.</span></div>
+</div></div>
+
+<!-- CTA -->
+<div class="sec"><div class="sec-inner" style="text-align:center;padding-top:8rem;padding-bottom:8rem">
+  <div class="reveal" style="display:flex;justify-content:center"><svg width="280" height="58" viewBox="0 0 500 103" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M76.8666 55.7917C76.8666 65.2726 84.5143 72.9583 93.9481 72.9583H102.489V77.25H93.9481C84.5143 77.25 76.8666 84.9358 76.8666 94.4167V103H72.5962V94.4167C72.5962 84.9358 64.9486 77.25 55.5148 77.25H46.974V72.9583H55.5148C64.9486 72.9583 72.5962 65.2726 72.5962 55.7917V12.875H76.8666V55.7917Z" fill="white"/><path d="M29.8926 8.58333C29.8926 18.0642 37.5402 25.75 46.974 25.75H55.5148V30.0417H46.974C37.5402 30.0417 29.8926 37.7274 29.8926 47.2083V90.125H25.6222V47.2083C25.6222 37.7274 17.9746 30.0417 8.54074 30.0417H0V25.75H8.54074C17.9746 25.75 25.6222 18.0642 25.6222 8.58333V0H29.8926V8.58333Z" fill="white"/><path d="M303.509 64.9576C304.775 64.9577 305.857 65.4238 306.732 66.3406L307.058 66.6801C307.764 67.4975 308.121 68.4745 308.121 69.5929C308.121 70.8707 307.655 71.9805 306.741 72.8997C305.862 73.7833 304.774 74.228 303.509 74.2282C302.243 74.2282 301.139 73.7851 300.223 72.908L300.21 72.8955C299.337 71.9745 298.897 70.8647 298.897 69.5929C298.897 68.321 299.339 67.2285 300.219 66.3448C301.133 65.4263 302.237 64.9576 303.509 64.9576Z" fill="white"/><path d="M172.216 36.014H160.018V73.3858H154.142V36.014H141.948V30.4692H172.216V36.014Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M198.818 30.7751L211.663 73.3858H205.386L205.295 73.0799L202.338 62.9333H185.04L182.083 73.0799L181.991 73.3858H175.715L188.555 30.7751L188.647 30.4692H198.726L198.818 30.7751ZM186.662 57.3885H200.711L193.726 33.4909H193.651L186.662 57.3885Z" fill="white"/><path d="M243.995 36.014H233.231V67.841H243.995V73.3858H216.596V67.841H227.355V36.014H216.596V30.4692H243.995V36.014Z" fill="white"/><path d="M259.258 67.841H281.139V73.3858H253.382V30.4692H259.258V67.841Z" fill="white"/><path d="M355.25 36.014H343.051V73.3858H337.176V36.014H324.982V30.4692H355.25V36.014Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M378.457 30.4692C380.644 30.4693 382.568 30.7964 384.22 31.4583C385.859 32.0758 387.231 32.9269 388.316 34.0148C389.438 35.1008 390.273 36.3787 390.814 37.8413C391.39 39.2527 391.677 40.7461 391.677 42.3173V44.1195C391.677 45.7654 391.212 47.3983 390.305 49.0147C389.459 50.59 388.152 51.8015 386.414 52.6693V52.7783C387.524 53.0239 388.434 53.5204 389.116 54.2871C389.886 55.1517 390.242 56.3488 390.242 57.816V73.3858H384.366V58.8973C384.366 57.9177 384.138 57.2327 383.749 56.7766C383.391 56.3569 382.712 56.085 381.564 56.085H368.957V73.3858H363.081V30.4692H378.457ZM368.957 50.5402H377.857C380.639 50.5402 382.61 49.9454 383.854 48.8429C385.133 47.7032 385.801 46.0325 385.801 43.7591V42.6778C385.801 40.6596 385.141 39.0778 383.845 37.8874L383.837 37.879C382.593 36.6661 380.63 36.014 377.857 36.014H368.957V50.5402ZM386.03 45.7289C386.051 45.629 386.08 45.5298 386.097 45.4271L386.11 45.3265C386.088 45.4635 386.058 45.5967 386.03 45.7289ZM385.409 39.1908C385.517 39.3895 385.614 39.5951 385.701 39.8069C385.527 39.3816 385.312 38.981 385.05 38.6082L385.409 39.1908Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M418.458 30.7751L431.303 73.3858H425.027L424.935 73.0799L421.978 62.9333H404.68L401.723 73.0799L401.631 73.3858H395.355L408.195 30.7751L408.287 30.4692H418.367L418.458 30.7751ZM406.302 57.3885H420.352L413.367 33.4909H413.292L406.302 57.3885Z" fill="white"/><path fill-rule="evenodd" clip-rule="evenodd" d="M449.756 30.4692C454.994 30.4693 458.916 31.7248 461.421 34.3249C463.923 36.9239 465.128 41.0242 465.128 46.521V57.3382C465.128 62.8343 463.923 66.9312 461.421 69.53C458.916 72.1312 454.995 73.3857 449.756 73.3858H435.577V67.7823H439.164V36.014H435.577V30.4692H449.756ZM445.04 67.841H449.039C450.846 67.841 452.379 67.6645 453.647 67.3171C454.943 66.9725 455.996 66.4027 456.813 65.6197C457.625 64.8012 458.228 63.7112 458.61 62.3298L458.614 62.3172C459.036 60.9303 459.252 59.1547 459.252 56.9777V46.8814C459.252 44.7045 459.035 42.9289 458.614 41.542L458.285 40.5487C457.915 39.6281 457.42 38.8847 456.813 38.3023L456.808 38.2939C455.992 37.473 454.943 36.8857 453.651 36.542C452.383 36.1946 450.846 36.014 449.039 36.014H445.04V67.841ZM460.649 34.1741L460.282 33.8555C460.259 33.8367 460.235 33.8198 460.211 33.8011C460.361 33.9219 460.508 34.0457 460.649 34.1741Z" fill="white"/><path d="M499.641 36.014H479.315V49.0985H499.283V54.6433H479.315V67.841H500V73.3858H473.439V30.4692H499.641V36.014Z" fill="white"/></svg></div>
+  <div class="body reveal d1" style="margin-top:16px;font-size:16px">Sports betting never became a market. We're fixing that.</div>
+  <div style="display:flex;justify-content:center;gap:12px;margin-top:32px" class="reveal d2"><a href="https://t.me/lostinai" target="_blank" rel="noopener" class="mono upper" style="display:inline-block;padding:12px 24px;background:var(--lime);color:var(--bg);font-size:14px;font-weight:700;border:none;cursor:pointer;border-radius:2px;text-decoration:none">Get in touch</a></div>
+  <div class="reveal d3" style="margin-top:16px"><span class="mono" style="font-size:14px;color:var(--lime);cursor:pointer" onclick="window.location='mai'+'lto:o'+'ps'+String.fromCharCode(64)+'tail.trade'">ops at tail.trade</span></div>
+  <div class="reveal d4" style="margin-top:48px;padding-top:24px;border-top:1px solid var(--border)"><span class="lbl" style="color:var(--t3)">tail.trade · Confidential · 2026</span></div>
+</div></div>
+
+
+</div>
+<script>
+// Static chart with match events
+(function(){
+const c=document.getElementById('chart-match');if(!c)return;
+const ctx=c.getContext('2d');
+// Match events: positions as fraction of total width, type: loss/win
+const matches=[
+  {pos:.22,type:'loss',label:'L 0-2 MCI'},
+  {pos:.52,type:'win',label:'W 3-1 CHE'},
+  {pos:.82,type:'loss',label:'L 1-2 LIV'}
+];
+// Generate price data with match impacts
+const pts=[];const N=200;let price=218;
+for(let i=0;i<N;i++){
+  const x=i/N;
+  // Gentle drift + noise
+  price+=(.03+Math.random()*.3-.14);
+  // Match 1: loss at 22% — drop
+  if(i===Math.floor(N*.21))price-=1;
+  if(i===Math.floor(N*.22))price-=4;
+  if(i===Math.floor(N*.23))price-=2;
+  if(i===Math.floor(N*.24))price-=1;
+  // Recovery
+  if(i>Math.floor(N*.25)&&i<Math.floor(N*.35))price+=.15;
+  // Match 2: win at 52% — jump
+  if(i===Math.floor(N*.51))price+=1;
+  if(i===Math.floor(N*.52))price+=5;
+  if(i===Math.floor(N*.53))price+=2;
+  if(i===Math.floor(N*.54))price+=1;
+  // Hold gains
+  if(i>Math.floor(N*.55)&&i<Math.floor(N*.7))price+=.08;
+  // Match 3: loss at 82% — drop
+  if(i===Math.floor(N*.81))price-=1;
+  if(i===Math.floor(N*.82))price-=3;
+  if(i===Math.floor(N*.83))price-=1.5;
+  // Slight recovery
+  if(i>Math.floor(N*.85))price+=.12;
+  pts.push({x,y:price});
+}
+let drawn=false;
+const io=new IntersectionObserver(es=>{if(es[0].isIntersecting&&!drawn){drawn=true;render()}},{threshold:.2});
+io.observe(c);
+function render(){
+  const dpr=devicePixelRatio||1;const W=c.offsetWidth;const H=c.offsetHeight;
+  if(!W||!H)return;
+  c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  const pad={t:16,b:24,l:16,r:16};const gW=W-pad.l-pad.r;const gH=H-pad.t-pad.b;
+  let mn=Infinity,mx=-Infinity;
+  for(const p of pts){if(p.y<mn)mn=p.y;if(p.y>mx)mx=p.y}
+  const vr=mx-mn||1;
+  function toX(x){return pad.l+x*gW}
+  function toY(y){return pad.t+gH*(1-(y-mn)/vr)}
+  // Grid
+  ctx.strokeStyle='rgba(36,38,41,.5)';ctx.lineWidth=.5;
+  for(let i=1;i<4;i++){const y=pad.t+gH*(i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke()}
+  // Match zones
+  for(const m of matches){
+    const x=toX(m.pos);
+    const col=m.type==='win'?'rgba(178,237,104,':'rgba(239,107,107,';
+    // Zone background
+    ctx.fillStyle=col+'0.04)';ctx.fillRect(x-20,pad.t,40,gH);
+    // Vertical lines (match start/end)
+    ctx.strokeStyle=col+'0.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(x-12,pad.t);ctx.lineTo(x-12,pad.t+gH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+12,pad.t);ctx.lineTo(x+12,pad.t+gH);ctx.stroke();
+    ctx.setLineDash([]);
+    // Match label on chart
+    ctx.font="700 10px 'Space Mono',monospace";
+    ctx.fillStyle=m.type==='win'?'#b2ed68':'#ef6b6b';
+    ctx.textAlign='center';// removed inline label
+  }
+  // Fill under curve
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(toX(pts[0].x),toY(pts[0].y));
+  for(let i=1;i<pts.length;i++)ctx.lineTo(toX(pts[i].x),toY(pts[i].y));
+  ctx.lineTo(toX(pts[pts.length-1].x),H-pad.b);ctx.lineTo(toX(pts[0].x),H-pad.b);ctx.closePath();
+  const gf=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+  gf.addColorStop(0,'rgba(178,237,104,.1)');gf.addColorStop(.5,'rgba(178,237,104,.03)');gf.addColorStop(1,'rgba(178,237,104,0)');
+  ctx.fillStyle=gf;ctx.fill();ctx.restore();
+  // Line
+  ctx.strokeStyle='#b2ed68';ctx.lineWidth=2;ctx.beginPath();
+  ctx.moveTo(toX(pts[0].x),toY(pts[0].y));
+  for(let i=1;i<pts.length;i++)ctx.lineTo(toX(pts[i].x),toY(pts[i].y));
+  ctx.stroke();
+  // End dot
+  const last=pts[pts.length-1];
+  ctx.beginPath();ctx.arc(toX(last.x),toY(last.y),3,0,Math.PI*2);ctx.fillStyle='#b2ed68';ctx.fill();
+  ctx.beginPath();ctx.arc(toX(last.x),toY(last.y),7,0,Math.PI*2);ctx.fillStyle='rgba(178,237,104,.15)';ctx.fill();
+  // Price labels on right
+  ctx.font="400 10px 'Space Mono',monospace";ctx.fillStyle='#606267';ctx.textAlign='right';
+  ctx.fillText('$'+Math.round(mx),W-pad.r-4,pad.t+10);
+  ctx.fillText('$'+Math.round(mn),W-pad.r-4,H-pad.b-4);
+}
+})();
+// Sawtooth vs Staircase liquidity charts
+(function(){
+  function drawChart(id,type){
+    const c=document.getElementById(id);if(!c)return;
+    const ctx=c.getContext('2d');
+    let animated=false;let animProg=0;
+    const io=new IntersectionObserver(es=>{if(es[0].isIntersecting&&!animated){animated=true}},{threshold:.3});
+    io.observe(c);
+
+    // Generate data points
+    const numMatches=12;
+    let pts=[];
+    if(type==='sawtooth'){
+      // Sawtooth: spike up before match, crash to near-zero after
+      // Irregular peak heights — some matches big, some small
+      var peakHeights=[.22,.34,.18,.28,.38,.15,.30,.24,.36,.19,.26,.20];
+      for(let m=0;m<numMatches;m++){
+        const base=m/numMatches;
+        const pk=peakHeights[m];
+        // Ramp up proportional to peak
+        pts.push({x:base,y:.02+Math.random()*.015});
+        pts.push({x:base+.035,y:pk*.35+Math.random()*.03});
+        pts.push({x:base+.055,y:pk*.7+Math.random()*.02});
+        pts.push({x:base+.068,y:pk*.9});
+        // Match peak
+        pts.push({x:base+.075,y:pk});
+        // Crash
+        pts.push({x:base+.08,y:.04+Math.random()*.025});
+        pts.push({x:base+.083,y:.015});
+      }
+    } else {
+      // Staircase: each match adds a bump, never resets, overall climbing
+      let level=.06;
+      for(let m=0;m<numMatches;m++){
+        const base=m/numMatches;
+        const step=1/numMatches;
+        // Slight pre-match rise
+        pts.push({x:base,y:level});
+        pts.push({x:base+step*.4,y:level+.01});
+        // Match catalyst — jump up
+        const jump=.04+Math.random()*.03;
+        level+=jump;
+        pts.push({x:base+step*.5,y:level});
+        // Small organic growth between matches
+        level+=.015+Math.random()*.008;
+        pts.push({x:base+step*.9,y:level});
+      }
+      pts.push({x:1,y:level});
+    }
+
+    function draw(){
+      const dpr=devicePixelRatio||1;const W=c.offsetWidth;const H=c.offsetHeight;
+      if(!W||!H){requestAnimationFrame(draw);return}
+      if(c.width!==W*dpr||c.height!==H*dpr){c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+      ctx.clearRect(0,0,W,H);
+
+      if(animated&&animProg<1)animProg=Math.min(1,animProg+.012);
+      const prog=animated?animProg:0;
+
+      const pad={t:10,b:20,l:10,r:10};
+      const gW=W-pad.l-pad.r;const gH=H-pad.t-pad.b;
+
+      // Subtle grid lines
+      ctx.strokeStyle='rgba(36,38,41,.5)';ctx.lineWidth=.5;
+      for(let i=1;i<4;i++){const y=pad.t+gH*(i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke()}
+
+      // Match markers along bottom
+      const col=type==='sawtooth'?'rgba(239,107,107,':'rgba(178,237,104,';
+      for(let m=0;m<numMatches;m++){
+        const x=pad.l+gW*((m+.5)/numMatches);
+        if(x/W<=prog){
+          ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);
+          ctx.strokeStyle=col+'0.06)';ctx.lineWidth=1;ctx.stroke();
+          ctx.beginPath();ctx.arc(x,H-pad.b+6,2,0,Math.PI*2);
+          ctx.fillStyle=col+'0.3)';ctx.fill();
+        }
+      }
+
+      // Draw line
+      const lineColor=type==='sawtooth'?'#ef6b6b':'#b2ed68';
+      const fillRgb=type==='sawtooth'?'239,107,107':'178,237,104';
+      const drawPts=pts.filter(p=>p.x<=prog);
+      if(drawPts.length<2){requestAnimationFrame(draw);return}
+
+      // Fill
+      ctx.save();ctx.beginPath();
+      ctx.moveTo(pad.l+drawPts[0].x*gW,pad.t+gH*(1-drawPts[0].y));
+      for(let i=1;i<drawPts.length;i++){
+        ctx.lineTo(pad.l+drawPts[i].x*gW,pad.t+gH*(1-drawPts[i].y));
+      }
+      ctx.lineTo(pad.l+drawPts[drawPts.length-1].x*gW,H-pad.b);
+      ctx.lineTo(pad.l+drawPts[0].x*gW,H-pad.b);
+      ctx.closePath();
+      const gf=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+      gf.addColorStop(0,'rgba('+fillRgb+',.15)');
+      gf.addColorStop(.6,'rgba('+fillRgb+',.04)');
+      gf.addColorStop(1,'rgba('+fillRgb+',0)');
+      ctx.fillStyle=gf;ctx.fill();ctx.restore();
+
+      // Stroke
+      ctx.beginPath();
+      ctx.moveTo(pad.l+drawPts[0].x*gW,pad.t+gH*(1-drawPts[0].y));
+      for(let i=1;i<drawPts.length;i++){
+        ctx.lineTo(pad.l+drawPts[i].x*gW,pad.t+gH*(1-drawPts[i].y));
+      }
+      ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.stroke();
+
+      // End dot
+      const last=drawPts[drawPts.length-1];
+      const lx=pad.l+last.x*gW;const ly=pad.t+gH*(1-last.y);
+      ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);ctx.fillStyle=lineColor;ctx.fill();
+      ctx.beginPath();ctx.arc(lx,ly,7,0,Math.PI*2);ctx.fillStyle='rgba('+fillRgb+',.2)';ctx.fill();
+
+      requestAnimationFrame(draw);
+    }draw();
+  }
+  drawChart('chart-sawtooth','sawtooth');
+  drawChart('chart-staircase','staircase');
+})();
+// Funnel - three streams converge
+(function(){
+const c=document.getElementById('funnel-canvas');if(!c)return;
+const ctx=c.getContext('2d');
+const streams=[
+  {label:'SPORTS WAGERING',sub:'$166.9B handle',color:'#b2ed68',rgb:[178,237,104]},
+  {label:'PREDICTION MARKETS',sub:'$64B volume',color:'#a78bfa',rgb:[167,139,250]},
+  {label:'PERP EXCHANGES',sub:'$6.7T volume',color:'#5b8def',rgb:[91,141,239]}
+];
+let particles=[];let t=0;let inView=false;
+const io=new IntersectionObserver(es=>{inView=es[0].isIntersecting},{threshold:.1});
+io.observe(c);
+function spawn(){for(let i=0;i<3;i++){if(Math.random()<.3){particles.push({stream:i,prog:0,speed:.003+Math.random()*.004,ox:(Math.random()-.5)*30})}}}
+function draw(){
+  const dpr=devicePixelRatio||1;const W=c.offsetWidth;const H=c.offsetHeight;
+  if(!W||!H){requestAnimationFrame(draw);return}
+  if(c.width!==W*dpr||c.height!==H*dpr){c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2;const topY=90;const botY=H-70;
+  const spread=Math.min(W*.35,180);const srcX=[cx-spread,cx,cx+spread];
+  const mergeY=botY-30;
+  for(let i=0;i<3;i++){
+    const cp1y=topY+(mergeY-topY)*.45;const cp2y=topY+(mergeY-topY)*.7;
+    ctx.beginPath();ctx.moveTo(srcX[i],topY+30);
+    ctx.bezierCurveTo(srcX[i],cp1y,cx,cp2y,cx,mergeY);
+    ctx.strokeStyle='rgba('+streams[i].rgb.join(',')+',0.12)';ctx.lineWidth=40;ctx.lineCap='round';ctx.stroke();
+    ctx.beginPath();ctx.moveTo(srcX[i],topY+30);
+    ctx.bezierCurveTo(srcX[i],cp1y,cx,cp2y,cx,mergeY);
+    ctx.strokeStyle='rgba('+streams[i].rgb.join(',')+',0.06)';ctx.lineWidth=20;ctx.stroke();
+  }
+  for(let i=0;i<3;i++){
+    ctx.beginPath();ctx.arc(srcX[i],topY-20,4,0,Math.PI*2);ctx.fillStyle=streams[i].color;ctx.fill();
+    ctx.beginPath();ctx.arc(srcX[i],topY-20,8,0,Math.PI*2);ctx.fillStyle='rgba('+streams[i].rgb.join(',')+',0.15)';ctx.fill();
+    ctx.font="700 "+Math.max(10,Math.min(12,W*.012))+"px 'Space Mono',monospace";
+    ctx.fillStyle=streams[i].color;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(streams[i].label,srcX[i],topY+10);
+    ctx.font="400 "+Math.max(9,Math.min(11,W*.01))+"px 'Space Mono',monospace";ctx.fillStyle='#8a8f98';
+    ctx.fillText(streams[i].sub,srcX[i],topY+28);
+  }
+  if(inView)spawn();particles=particles.filter(p=>p.prog<1.05);
+  for(const p of particles){
+    p.prog+=p.speed;const i=p.stream;const t2=p.prog;
+    const cp1y=topY+(mergeY-topY)*.45;const cp2y=topY+(mergeY-topY)*.7;
+    const mt=1-t2;
+    const px=mt*mt*mt*srcX[i]+3*mt*mt*t2*srcX[i]+3*mt*t2*t2*cx+t2*t2*t2*cx;
+    const py=mt*mt*mt*(topY+30)+3*mt*mt*t2*cp1y+3*mt*t2*t2*cp2y+t2*t2*t2*mergeY;
+    const alpha=Math.sin(t2*Math.PI)*.7;const sz=2+Math.sin(t2*Math.PI)*1.5;
+    ctx.beginPath();ctx.arc(px+p.ox*(1-t2),py,sz,0,Math.PI*2);
+    ctx.fillStyle='rgba('+streams[i].rgb.join(',')+','+alpha+')';ctx.fill();
+  }
+  const grd=ctx.createRadialGradient(cx,botY-10,0,cx,botY-10,60);
+  grd.addColorStop(0,'rgba(178,237,104,.12)');grd.addColorStop(1,'rgba(178,237,104,0)');
+  ctx.fillStyle=grd;ctx.fillRect(cx-60,botY-70,120,120);
+  ctx.beginPath();ctx.arc(cx,mergeY,6,0,Math.PI*2);ctx.fillStyle='#b2ed68';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,mergeY,12,0,Math.PI*2);ctx.fillStyle='rgba(178,237,104,.12)';ctx.fill();
+  ctx.font="700 "+Math.max(14,Math.min(18,W*.018))+"px 'Space Mono',monospace";
+  ctx.fillStyle='#eef1f6';ctx.textAlign='center';
+  ctx.fillText('TAIL.TRADE',cx,botY+5);
+  ctx.font="400 "+Math.max(10,Math.min(13,W*.012))+"px 'Space Grotesk',sans-serif";
+  ctx.fillStyle='#8a8f98';
+  ctx.fillText('The first venue for continuous team-level sports positions',cx,botY+25);
+  t+=.01;requestAnimationFrame(draw);
+}draw()})();
+// Flywheel - KOPS AI center + 6 orbital nodes
+(function(){const c=document.getElementById('fw-canvas');if(!c)return;const ctx=c.getContext('2d');
+const nodes=[
+  {label:'Oracle\npublishes\nteam price',color:'#e8943a'},
+  {label:'Traders\nopen\npositions',color:'#606267'},
+  {label:'Deeper\nliquidity',color:'#b2ed68'},
+  {label:'Better\nprice\ndiscovery',color:'#b2ed68'},
+  {label:'More\ncredibility',color:'#606267'},
+  {label:'More\ntraders',color:'#606267'},
+];
+let t=0;
+function draw(){
+  const dpr=devicePixelRatio||1;const W=c.offsetWidth;const H=c.offsetHeight;
+  if(!W||!H){requestAnimationFrame(draw);return}
+  if(c.width!==W*dpr||c.height!==H*dpr){c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2;
+  const centerR=Math.min(W,H)*.18;
+  const orbitR=Math.min(W,H)*.4;
+  const nodeR=Math.min(W,H)*.09;
+
+  // Center circle
+  ctx.beginPath();ctx.arc(cx,cy,centerR,0,Math.PI*2);
+  ctx.strokeStyle='#e8943a';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,centerR,0,Math.PI*2);
+  ctx.fillStyle='rgba(232,148,58,.03)';ctx.fill();
+  // Center text
+  ctx.font="700 "+Math.floor(centerR*.38)+"px 'Space Mono',monospace";ctx.fillStyle='#eef1f6';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#eef1f6';ctx.fillText('ORACLE',cx,cy);
+
+  // Orbital nodes
+  for(let i=0;i<6;i++){
+    const a=-Math.PI/2+i*(Math.PI*2/6);
+    const nx=cx+Math.cos(a)*orbitR;
+    const ny=cy+Math.sin(a)*orbitR;
+
+    // Connecting curve from center to node
+    ctx.beginPath();
+    const mx=(cx+nx)/2+(Math.sin(a))*20;
+    const my=(cy+ny)/2-(Math.cos(a))*20;
+    ctx.moveTo(cx+Math.cos(a)*centerR,cy+Math.sin(a)*centerR);
+    ctx.quadraticCurveTo(mx,my,nx-Math.cos(a)*nodeR,ny-Math.sin(a)*nodeR);
+    ctx.strokeStyle='rgba(96,98,103,.25)';ctx.lineWidth=1;ctx.stroke();
+
+    // Arrow particles on connections
+    for(let p=0;p<2;p++){
+      const prog=((t*.5+p*.5+i*.167)%1);
+      const pt=prog;
+      const px=cx+Math.cos(a)*centerR+(nx-Math.cos(a)*nodeR-(cx+Math.cos(a)*centerR))*pt;
+      const py=cy+Math.sin(a)*centerR+(ny-Math.sin(a)*nodeR-(cy+Math.sin(a)*centerR))*pt;
+      const alpha=Math.sin(prog*Math.PI)*.6;
+      ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(178,237,104,${alpha})`;ctx.fill();
+    }
+
+    // Node circle
+    ctx.beginPath();ctx.arc(nx,ny,nodeR,0,Math.PI*2);
+    ctx.strokeStyle=nodes[i].color;ctx.lineWidth=1;ctx.stroke();
+    ctx.beginPath();ctx.arc(nx,ny,nodeR,0,Math.PI*2);
+    const rgb=nodes[i].color==='#b2ed68'?'178,237,104':nodes[i].color==='#e8943a'?'232,148,58':'96,98,103';
+    ctx.fillStyle=`rgba(${rgb},.04)`;ctx.fill();
+
+    // Node label (multiline)
+    const lines=nodes[i].label.split('\n');
+    ctx.font="500 "+Math.max(9,Math.floor(nodeR*.22))+"px 'Space Grotesk',sans-serif";
+    ctx.fillStyle='#eef1f6';ctx.textAlign='center';ctx.textBaseline='middle';
+    const lh=Math.floor(nodeR*.28);
+    const startY=ny-((lines.length-1)*lh)/2;
+    lines.forEach((line,li)=>{ctx.fillText(line,nx,startY+li*lh)});
+  }
+
+  // Outer arc arrows (connecting node to node)
+  for(let i=0;i<6;i++){
+    const a1=-Math.PI/2+i*(Math.PI*2/6);
+    const a2=-Math.PI/2+((i+1)%6)*(Math.PI*2/6);
+    ctx.beginPath();
+    ctx.arc(cx,cy,orbitR+nodeR+8,a1+.15,a2-.15);
+    ctx.strokeStyle='rgba(96,98,103,.12)';ctx.lineWidth=1;ctx.stroke();
+  }
+
+  t+=.006;requestAnimationFrame(draw);
+}draw()})();
+// Vol bars
+const vo=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('active');vo.unobserve(e.target)}})},{threshold:.5});document.querySelectorAll('.vbar-fill').forEach(el=>vo.observe(el));
+// Grid
+(function(){const c=document.getElementById('grid-bg'),ctx=c.getContext('2d');const GS=40;let w,h;function resize(){const dpr=devicePixelRatio;w=innerWidth;h=innerHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}resize();addEventListener('resize',resize);let mx=-9999,my=-9999;addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});function draw(){ctx.clearRect(0,0,w,h);const cols=Math.ceil(w/GS),rows=Math.ceil(h/GS);for(let c2=0;c2<=cols;c2++){const x=c2*GS;ctx.beginPath();ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,h);ctx.strokeStyle='rgba(36,38,41,.25)';ctx.lineWidth=.5;ctx.stroke()}for(let r=0;r<=rows;r++){const y=r*GS;ctx.beginPath();ctx.moveTo(0,y+.5);ctx.lineTo(w,y+.5);ctx.strokeStyle='rgba(36,38,41,.25)';ctx.lineWidth=.5;ctx.stroke()}for(let c2=0;c2<=cols;c2++){for(let r=0;r<=rows;r++){const x=c2*GS,y=r*GS+pageYOffset%GS;const dist=Math.hypot(mx-x,my-y);if(dist<200){ctx.fillStyle=`rgba(178,237,104,${(1-dist/200)*.2})`;ctx.fillRect(x-1.5,y-1.5,3,3)}else{ctx.fillStyle='rgba(36,38,41,.3)';ctx.fillRect(x-.5,y-.5,1,1)}}}requestAnimationFrame(draw)}draw()})();
+// Reveal
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.15});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</head>
+<body>
+
+</html>
